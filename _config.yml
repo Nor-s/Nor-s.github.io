@@ -163,3 +163,5 @@ jekyll-archives:
     tag: /tags/:name/
     category: /categories/:name/
 avatar: '/commons/avatar.png'
+
+future: true
