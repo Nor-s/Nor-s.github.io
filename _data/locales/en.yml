@@ -1,7 +1,6 @@
 # The layout text of site
 
 # ----- Commons label -----
-
 layout:
   post: Post
   category: Category

@@ -5,21 +5,27 @@ category: vscode
 tags: [vscode]
 ---
 
+---
+
 vim을 사용하다보면 노말모드에서 한영키가 거슬리는 일이 많이 일어난다.
 
 vscode vim 의 `vim.autoSwitchInputMethod` 을 세팅하면 이런 불편함을 어느정도 해결할 수 있다.
 
 이 포스트는 윈도우 기준으로 작성했지만, MacOS도 적용 가능하다.
 
-## im-select 설치
+---
 
-- https://github.com/daipeihust/im-select#installation
+## **im-select 설치**
+
+[im-select](https://github.com/daipeihust/im-select#installation)
 
 위 사이트에서 `im-select.exe`를 다운받는다.
 
-## vscode-vim 설정
+---
 
-- vscode 세팅에 다음과 같이 default에 영문 키를 추가해주고, 윈도우 영문 입력기 코드인 `1033`과 im-select 경로를 입력해주면 끝.
+## **vscode-vim 설정**
+
+- vscode 세팅에 다음과 같이 defaultIM에 윈도우 영문 입력기 코드인 `1033`과 im-select 경로를 입력해주면 끝.
 
 ```json
     "vim.autoSwitchInputMethod.enable": true,
@@ -28,10 +34,14 @@ vscode vim 의 `vim.autoSwitchInputMethod` 을 세팅하면 이런 불편함을 
     "vim.autoSwitchInputMethod.switchIMCmd": "D:\\Study\\im-select.exe {im}",
 ```
 
-## 주의점
+---
+
+## **주의점**
 
 - 다른 모드에서 노말 모드로 변경 시에만 적용이된다. 즉, 다른 창에서 에디터로 들어오면 한영키는 그대로.
 
-## 공식문서
+---
 
-https://github.com/VSCodeVim/Vim#:~:text=camelCase%20word%20segment.-,Input%20Method,-Disable%20input%20method
+## **공식문서**
+
+[vim input method](https://github.com/VSCodeVim/Vim#:~:text=camelCase%20word%20segment.-,Input%20Method,-Disable%20input%20method)
