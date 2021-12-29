@@ -15,15 +15,15 @@ vscode vim 의 `vim.autoSwitchInputMethod` 을 세팅하면 이런 불편함을 
 
 ---
 
-## **im-select 설치**
+## **# im-select 설치**
 
 [im-select](https://github.com/daipeihust/im-select#installation)
 
-위 사이트에서 `im-select.exe`를 다운받는다.
+위에서 `im-select.exe`를 다운받는다.
 
 ---
 
-## **vscode-vim 설정**
+## **# vscode-vim 설정**
 
 - vscode 세팅에 다음과 같이 defaultIM에 윈도우 영문 입력기 코드인 `1033`과 im-select 경로를 입력해주면 끝.
 
@@ -36,12 +36,15 @@ vscode vim 의 `vim.autoSwitchInputMethod` 을 세팅하면 이런 불편함을 
 
 ---
 
-## **주의점**
+## **# 주의점**
 
 - 다른 모드에서 노말 모드로 변경 시에만 적용이된다. 즉, 다른 창에서 에디터로 들어오면 한영키는 그대로.
+- 따로 설정하지 않았다면, 영문 입력기 사용 중 한영키를 누르지 말것.(alt + shift시 변경가능)
+- 당연히 영문 입력기가 설치되어 있어야한다.
+- vscode vim에 한글과 관련한 버그가 있다.
 
 ---
 
-## **공식문서**
+## **# 공식문서**
 
 [vim input method](https://github.com/VSCodeVim/Vim#:~:text=camelCase%20word%20segment.-,Input%20Method,-Disable%20input%20method)
