@@ -1,8 +1,4 @@
-const target = "Is this is";
-const regex = /is/g;
-
-const ret = target.match(regex);
-const ret1 = regex.exec(target);
-
-ret;
-ret1;
+var xArray;
+var str = "fee fi fo fum";
+var re = /\w+\s/g;
+while ((xArray = re.exec(str))) console.log(xArray);
