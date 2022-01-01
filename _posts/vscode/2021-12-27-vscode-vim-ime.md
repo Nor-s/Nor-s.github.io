@@ -11,15 +11,15 @@ vim을 사용하다보면 노말모드에서 한영키가 거슬리는 일이 �
 
 vscode vim 의 `vim.autoSwitchInputMethod` 을 세팅하면 이런 불편함을 어느정도 해결할 수 있다.
 
-이 포스트는 윈도우 기준으로 작성했지만, MacOS도 적용 가능하다.
-
 ---
 
 ## **# im-select 설치**
 
 [im-select](https://github.com/daipeihust/im-select#installation)
 
-위에서 `im-select.exe`를 다운받는다.
+위 경로에서 윈도우인 경우 `im-select.exe`를 다운받는다.
+
+mac m1은 [im-select](https://github.com/daipeihust/im-select/blob/8080ad18f20218d1b6b5ef81d26cc5452d56b165/im-select-mac/out/apple/im-select)를 다운받으면 된다.
 
 ---
 
@@ -32,6 +32,15 @@ vscode vim 의 `vim.autoSwitchInputMethod` 을 세팅하면 이런 불편함을 
     "vim.autoSwitchInputMethod.defaultIM": "1033",
     "vim.autoSwitchInputMethod.obtainIMCmd": "D:\\Study\\im-select.exe",
     "vim.autoSwitchInputMethod.switchIMCmd": "D:\\Study\\im-select.exe {im}",
+```
+
+- mac m1은 아래와 같다.
+
+```json
+  "vim.autoSwitchInputMethod.enable": true,
+  "vim.autoSwitchInputMethod.defaultIM": "com.apple.keylayout.ABC",
+  "vim.autoSwitchInputMethod.obtainIMCmd": "/Users/Downloads/im-select",
+  "vim.autoSwitchInputMethod.switchIMCmd": "/Users/Downloads/im-select {im}",
 ```
 
 ---
