@@ -55,6 +55,11 @@ yo code
 }
 ```
 
+## child process
+
+- 다른 프로세스 실행하여, 값을 얻어온다
+- list, 
+
 ## publish 하기
 
 [vscode-publish](https://code.visualstudio.com/api/working-with-extensions/publishing-extension)
