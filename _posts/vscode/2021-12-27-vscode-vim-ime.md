@@ -51,6 +51,7 @@ mac m1은 [im-select](https://github.com/daipeihust/im-select/blob/8080ad18f2021
 - 따로 설정하지 않았다면, 영문 입력기 사용 중 한영키를 누르지 말것.(alt + shift시 변경가능)
 - 당연히 영문 입력기가 설치되어 있어야한다.
 - vscode vim에 한글과 관련한 버그가 있다.
+- permission denied 해결: sudo chmod -R 777 im-select
 
 ---
 
