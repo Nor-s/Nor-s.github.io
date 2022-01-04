@@ -2,7 +2,7 @@
 title: "[vscode] front matter gen"
 date: 2021-12-28T16:50:53Z
 category: vscode
-tags: [vscode]
+tags: [vscode, 프로젝트]
 ---
 
 ## **# front matter gen**
