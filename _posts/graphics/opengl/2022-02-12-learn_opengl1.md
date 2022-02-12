@@ -5,7 +5,7 @@ category: ["graphics", "graphics-opengl"]
 tags: [opengl]
 ---
 
-# 1. OpenGL
+## 1. OpenGL
 
 immediate mode (fixed function pipeline)
 
@@ -33,7 +33,7 @@ OpenGL 3.3버전 을 배우는 이유 :
 
     이후버전은 기능이 추가되거나 함수가 더 효율적으로 바뀐것.
 
-# 2. Extensions
+## 2. Extensions
 
 - 그래픽 카드 회사에서 렌더링을 위해 새로운 기술을 개발하거나 최적화 작업을 한것을
 
@@ -52,7 +52,7 @@ else
 }
 ```
 
-# 3. State Machine
+## 3. State Machine
 
 OpenGL은 커다란 상태 머신
 
@@ -68,7 +68,7 @@ current context(현 상태)를 변경해야함
 
 (현상태는 변경하기전 까지 계속 유지)
 
-# 4. Objects
+## 4. Objects
 
 core 는 C 라이브러리,
 
@@ -114,7 +114,7 @@ glSetObjectOption(GL_WINDOW_TARGET, GL_OPTION_WINDOW_HEIGHT, 600);
 glBindObject(GL_WINDOW_TARGET, 0);
 ```
 
-# link
+## link
 
 [LearnOpenGL - Introduction](https://learnopengl.com/Introduction)
 
