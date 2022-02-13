@@ -10,7 +10,7 @@
   --main-border-color: rgb(44, 45, 45);
 
   /* Common color */
-  --text-color: rgb(175, 176, 177);
+  --text-color: rgb(235, 239, 243);
   --text-muted-color: rgb(107, 116, 124);
   --heading-color: #cccccc;
   --blockquote-border-color: rgb(66, 66, 66);
@@ -65,7 +65,11 @@
   --card-bg: rgb(39, 40, 43);
   --card-border-color: rgb(53, 53, 60);
   --card-box-shadow: var(--main-wrapper-bg);
-  --preview-img-bg: radial-gradient(circle, rgb(22 22 24) 0%, rgb(32 32 32) 100%);
+  --preview-img-bg: radial-gradient(
+    circle,
+    rgb(22 22 24) 0%,
+    rgb(32 32 32) 100%
+  );
 
   /* tags */
   --tag-border: rgb(59, 79, 88);
@@ -92,11 +96,11 @@
   }
 
   /* posts' toc, override BS */
-  nav[data-toggle=toc] .nav-link.active,
-  nav[data-toggle=toc] .nav-link.active:focus,
-  nav[data-toggle=toc] .nav-link.active:hover,
-  nav[data-toggle=toc] .nav > li > a:focus,
-  nav[data-toggle=toc] .nav > li > a:hover {
+  nav[data-toggle="toc"] .nav-link.active,
+  nav[data-toggle="toc"] .nav-link.active:focus,
+  nav[data-toggle="toc"] .nav-link.active:hover,
+  nav[data-toggle="toc"] .nav > li > a:focus,
+  nav[data-toggle="toc"] .nav > li > a:hover {
     color: var(--toc-highlight) !important;
     border-left-color: var(--toc-highlight) !important;
   }
@@ -125,15 +129,14 @@
   }
 
   #archives li:nth-child(odd) {
-    background-image:
-      linear-gradient(
-        to left,
-        rgb(26, 26, 30),
-        rgb(39, 39, 45),
-        rgb(39, 39, 45),
-        rgb(39, 39, 45),
-        rgb(26, 26, 30)
-      );
+    background-image: linear-gradient(
+      to left,
+      rgb(26, 26, 30),
+      rgb(39, 39, 45),
+      rgb(39, 39, 45),
+      rgb(39, 39, 45),
+      rgb(26, 26, 30)
+    );
   }
 
   color-scheme: dark;
@@ -141,5 +144,4 @@
   #disqus_thread {
     color-scheme: none;
   }
-
 } // dark-scheme
