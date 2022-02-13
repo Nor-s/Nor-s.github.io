@@ -279,7 +279,7 @@ glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
 - 아래는 기초적인 vertex shader 코드이다.
 
-```cpp
+```glsl
 #version 330 core
 layout (location = 0) in vec3 aPos;
 
