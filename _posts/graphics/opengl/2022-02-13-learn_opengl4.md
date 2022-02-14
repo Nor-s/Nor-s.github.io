@@ -5,7 +5,7 @@ category: ["graphics", "graphics-opengl"]
 tags: [opengl]
 ---
 
-# Shaders
+# **Shaders**
 
 - GPU에서 동작하는 프로그램 (little programs tat rest on the GPU)
 
@@ -15,7 +15,7 @@ tags: [opengl]
 
 - 서로 통신할 수 없음. 유일한 통신은 입력값과 출력값을 통해서하는것
 
-# GLSL
+# **GLSL**
 
 - Shader는 C언어와 비슷한 GLSL로 작성한다.
 
@@ -47,7 +47,7 @@ out_variable_name = weird_stuff_we_processed;
 }
 ```
 
-## Vertex shader
+## **Vertex shader**
 
 - 각각의 입력변수 : vertex attribute
 
@@ -63,13 +63,13 @@ glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &nrAttributes);
 std::cout << "Maximum nr of vertex attributes supported: " << nrAttributes << std::endl;
 ```
 
-## GLSL Types
+## **GLSL Types**
 
 - c언어와 같은 언어에서 볼 수 있는 기본적인 타입들의 대부분을 가지고 있다. (int, float, double, uint, bool)
 
 - 두가지 컨테이너 타입 vector, matrics
 
-## GLSL Vectors
+## **GLSL Vectors**
 
 - Vector 는 1~4가지 요소를 가진 컨테이너
 
@@ -89,7 +89,7 @@ std::cout << "Maximum nr of vertex attributes supported: " << nrAttributes << st
 
 - stpq : 텍스쳐 좌표
 
-## GLSL Vector swizzling
+## **GLSL Vector swizzling**
 
 ```glsl
 vec2 someVec;
@@ -108,7 +108,7 @@ vec4 otherResult = vec4(result.xyz, 1.0);
 
 - 모든 유형의 입출력에 사용할 수 있는 유연한 데이터 타입
 
-## Ins and Outs
+## **Ins and Outs**
 
 - 입력과 출력 : 키워드 in, out 로 정의
 
@@ -126,7 +126,7 @@ vec4 otherResult = vec4(result.xyz, 1.0);
   - vec4 타입의 컬러 출력 변수가 필요
   - fragment shader에서 출력 컬러 지정하는 것이 실패되면 검정 or white 로 렌더링됨
 
-## shader 간 통신
+## **shader 간 통신**
 
 - 데이터를 shader 에서 shader로 넘기고싶으면, 보내는 shader에서 출력을 선언해야하고
 
@@ -163,7 +163,7 @@ FragColor = vertexColor;
 
 - vertex shader 에 vec4 타입 선언 => 출력 , fragment shader => 입력 선언 => 통신
 
-## Uniforms 설정
+## **Uniforms 설정**
 
 - CPU위의 응용 프로그램에서 GPU 위의 shader 로 데이터를 전달하는 `vertex attribute`와는 다른 방법.
 
@@ -202,19 +202,19 @@ glUseProgram(shaderProgram);
 glUniform4f(vertexColorLocation, 0.0f, greenValue, 0.0f, 1.0f);
 ```
 
-### 데이터 삽입방법
+### **데이터 삽입방법**
 
 1. shader 에서 uniform attribute의 index/ location을 찾아야함.
 
 2. uniform의 index/ location을 알아내기만 하면, 값을 수정할 수 있음.
 
-### 시간에 따라 색 변경
+### **시간에 따라 색 변경**
 
 1.  `glfwGetTime` => 초단위로 실행시간 검색 (timer measures time elapsed since the call to glfwInit)
 
 2.  sin 함수로 0.0 - 1.0 사이의 값으로 변환
 
-### glGetUniformLocation
+### **glGetUniformLocation**
 
 - `glGetUniformLocation` 함수가 -1 리턴 : location을 찾지 못한것.
 
@@ -232,7 +232,7 @@ glUniform4f(vertexColorLocation, 0.0f, greenValue, 0.0f, 1.0f);
     fv: the function expects a float vector/array as its value.
 ```
 
-### Uniforms 사용
+### **Uniforms 사용**
 
 - 렌더링 루프안에서 uniform을 수정을 해줘야함.
 
@@ -267,9 +267,9 @@ while(!glfwWindowShouldClose(window))
 }
 ```
 
-# More Attributes
+# **More Attributes**
 
-## 컬러 데이터 추가
+## **컬러 데이터 추가**
 
 ```cpp
 float vertices[] = {
@@ -313,7 +313,7 @@ FragColor = vec4(ourColor, 1.0);
 }
 ```
 
-## vertex attribute pointer
+## **vertex attribute pointer**
 
 - 추가적인 vertex attribute를 추가하고,
 
@@ -352,7 +352,7 @@ glEnableVertexAttribArray(1);
 
 - fragment interpolation은 fragment shader의 모든 입력 attribute에 적용됨.
 
-## shader class
+## **shader class**
 
 - 소스코드로 관리, 디스크에서 shader를 읽고, 컴파일, 연결, 오류확인하는 class를 만들면 편리하다.
 
@@ -389,7 +389,7 @@ unsigned int ID;
 #endif
 ```
 
-## Reading from file
+## **Reading from file**
 
 - 파일 -> string : filestream
 
@@ -429,7 +429,7 @@ Shader(const char* vertexPath, const char* fragmentPath)
     [...]
 ```
 
-## compile & link & error
+## **compile & link & error**
 
 ```cpp
 // 2. compile shaders
@@ -489,7 +489,7 @@ glUniform1f(glGetUniformLocation(ID, name.c_str()), value);
 }
 ```
 
-## shader class 사용
+## **shader class 사용**
 
 ```cpp
 Shader ourShader("path/to/shaders/shader.vs", "path/to/shaders/shader.fs");
@@ -506,6 +506,12 @@ while(...)
 
 - .vs .fs 확장자가 직관적
 
-# link
+# **attribute, uniform, varing**
+
+[stackoverflow](https://stackoverflow.com/questions/17537879/in-webgl-what-are-the-differences-between-an-attribute-a-uniform-and-a-varying)
+
+[tistory](https://dalbom.tistory.com/6)
+
+# **출처**
 
 [Shaders](https://learnopengl.com/Getting-started/Shaders)

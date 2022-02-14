@@ -822,6 +822,6 @@ glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
 - 파라미터 2 : GL_LINE = 선으로 그리기 , GL_FILL = 채워서 그리기
 
-# **link**
+# **출처**
 
 [LearnOpenGL - Hello Triangle](https://learnopengl.com/Getting-started/Hello-Triangle)

@@ -114,7 +114,7 @@ glSetObjectOption(GL_WINDOW_TARGET, GL_OPTION_WINDOW_HEIGHT, 600);
 glBindObject(GL_WINDOW_TARGET, 0);
 ```
 
-## link
+## 출처
 
 [LearnOpenGL - Introduction](https://learnopengl.com/Introduction)
 

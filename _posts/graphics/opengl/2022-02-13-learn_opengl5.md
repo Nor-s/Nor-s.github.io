@@ -5,7 +5,7 @@ category: ["graphics", "graphics-opengl"]
 tags: [opengl]
 ---
 
-# Textures
+# **Textures**
 
 - 각 모델에는 더많은 vertex들이 필요, 각 vertex는 컬러 attributes이 필요 => 오버헤드
 
@@ -15,7 +15,7 @@ tags: [opengl]
 
 - 텍스쳐는 많은 양의 데이터를 저장하여 shader에 보낼 수 있음.
 
-## 삼각형에 매핑
+## **삼각형에** **매핑**
 
 - 각 vertex에 텍스처의 어느 부분이 해당하는지 알려주어야함.
 
@@ -23,7 +23,7 @@ tags: [opengl]
 
 - fragment 보간을 통해 텍스처 좌표 를 보간
 
-## 텍스처 좌표의 범위
+## **텍스처** **좌표의** **범위**
 
 - x와 y축상의 0~1
 
@@ -51,7 +51,7 @@ float texCoords[] = {
 
 - OpenGL에게 sample 하는 방법을 알려줘야함
 
-# Texture Wrapping
+# **Texture** **Wrapping**
 
 - 텍스처 좌표의 범위는 (0, 0) ~ (1, 1) 이다
 
@@ -99,7 +99,7 @@ float borderColor[] = { 1.0f, 1.0f, 0.0f, 1.0f };
 glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
 ```
 
-# Texture Filtering
+# **Texture** **Filtering**
 
 - 좌표는 해상도에 의존하지 않음.
 
@@ -113,7 +113,7 @@ glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
 
 - GL_NEAREST, GL_LINEAR
 
-## GL_NEAREST
+## **GL_NEAREST**
 
 - nearest neighbor filtering
 
@@ -123,7 +123,7 @@ glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
 
 ![](https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2Fn9ghl%2FbtraoBRxmD1%2Fk3cchmi4KcsKJXYOQKT0t1%2Fimg.png)
 
-## GL_LINEAR
+## **GL_LINEAR**
 
 - bilinear filtering
 
@@ -139,7 +139,7 @@ glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
 
 - Linear 은 smoother pattern 로 개별 픽셀들이 덜 보임.
 
-## 확대(magnifying), 축소(minifying) 작업에 대해 설정
+## **확대(magnifying), 축소(minifying) 작업에 대해 설정**
 
 - 축소 : nearest
 
@@ -152,7 +152,7 @@ glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 ```
 
-# Mipmaps
+# **Mipmaps**
 
 - 수천개의 오브젝트가 있는 넓은 공간에 각각에 텍스처가 첨부될 경우
 
@@ -164,7 +164,7 @@ glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
 - **작은 물체에 고해상도 텍스처를 사용하여 메모리 낭비, 물체에 결함이 보일 수 있음**
 
-## mipmaps
+## **mipmaps**
 
 - 텍스처의 집합, 순차적으로 이전 텍스처보다 2배씩 작아지는 텍스처들
 
@@ -186,7 +186,7 @@ glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
 - mipmap레벨 사이의 필터링 방법을 지정하기 위해 필터링 방법을 4가지 옵션중 하나로 대체가능
 
-## glTexParameteri 사용
+## **glTexParameteri 사용**
 
 1. GL_NEAREST_MIPMAP_NEAREST
 
@@ -210,7 +210,7 @@ glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
 > <font color=red>**주의**</font> : mipmap 필터링 옵션중 하나를 확대 필터로 설정하는것=> mipmap은 축소될때 주로 사용, 확대인 경우 효과 없음=> GL_INVALID_ENUM 오류코드
 
-# Loading and creating textures
+# **Loading and creating textures**
 
 - 응용프로그램에 텍스처를 로드
 
@@ -241,11 +241,11 @@ unsigned char *data = stbi_load("container.jpg", &width, &height, &nrChannels, 0
 
 - 텍스처를 생성하기 위해서, width 와 height 정보가 필요함.
 
-## Generating a texture
+## **Generating a texture**
 
 - 이전 객체들과 마찬가지로 ID로 참조
 
-## glGenTextures 함수
+## **glGenTextures 함수**
 
 - 파라미터 1: 생성할 객체의 크기
 
@@ -256,7 +256,7 @@ unsigned int texture;
 glGenTextures(1, &texture);
 ```
 
-## glBindTexture 함수
+## **glBindTexture 함수**
 
 - 텍스처를 바인딩, 그 후 명령이 현재 바인딩된 텍스처를 대상으로 설정
 
@@ -264,7 +264,7 @@ glGenTextures(1, &texture);
 glBindTexture(GL_TEXTURE_2D, texture);
 ```
 
-## glTexImage2D
+## **glTexImage2D**
 
 - 이전에 로드된 이미지 데이터를 사용하여, 텍스처를 생성할 수 있음
 
@@ -293,13 +293,13 @@ glGenerateMipmap(GL_TEXTURE_2D);
 
 - 파라미터 9 : 실제 이미지의 데이터
 
-## 이미지의 메모리 반환(텍스처와 mipmap들을 생성한 후)
+## **이미지의 메모리 반환(텍스처와 mipmap들을 생성한 후)**
 
 ```cpp
 stbi_image_free(data);
 ```
 
-## 전체적인 과정
+## **전체적인 과정**
 
 ```cpp
 unsigned int texture;
@@ -328,7 +328,7 @@ else
 stbi_image_free(data);
 ```
 
-## Applying textures
+## **Applying textures**
 
 - OpenGL에게 텍스처를 샘플하는 방법을 알려주어야하므로, 텍스처 좌표를 vertex 데이터에 추가해야함
 
@@ -346,14 +346,14 @@ float vertices[] = {
 
 ![](https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FBPPao%2Fbtrao7W0chC%2FmKmvs6dy0moECEvf8ksBGK%2Fimg.png)
 
-## 텍스쳐 좌표 : stride = 8, offset = 6
+## **텍스쳐 좌표 : stride = 8, offset = 6**
 
 ```cpp
 glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
 glEnableVertexAttribArray(2);
 ```
 
-## vertex shader 에 텍스처 좌표값 추가
+## **vertex shader 에 텍스처 좌표값 추가**
 
 ```glsl
 #version 330 core
@@ -372,7 +372,7 @@ void main()
 }
 ```
 
-## fragment shader 에 sample 넘겨줌
+## **fragment shader 에 sample 넘겨줌**
 
 - fragment shader 는 텍스처 객체에 접근해야함.
 
@@ -395,7 +395,7 @@ void main()
 }
 ```
 
-### texture 함수
+### **texture 함수**
 
 - 앞서 설정했던 텍스처 파라미터를 사용하여 해당 컬러값을 샘플링
 
@@ -405,7 +405,7 @@ void main()
 
 - 파라미터 2 : 텍스처 좌표
 
-## glDrawElements
+## **glDrawElements**
 
 - 호출하기 전에 텍스처를 바인딩, 텍스처를 fragment shader의 sampler로 자동으로 할당하게 된다.
 
@@ -425,7 +425,7 @@ FragColor = texture(ourTexture, TexCoord) * vec4(ourColor, 1.0);
 
 ![](https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FEWWOX%2FbtranhseNZp%2FsmkKLdEYYqoZQZF95aufhK%2Fimg.png)
 
-# Texture Units
+# **Texture Units**
 
 - `glUniform` 함수를 사용하지 않음에도 `sampler2D` 변수가 uniform 인지 `glUniform1i함수`를 사용하여 실제 텍스처 sampler에 위치 값을 할당하여 fragment shader에서 동시에 여러 텍스처들을 설정할 수 있음
 
@@ -443,7 +443,7 @@ FragColor = texture(ourTexture, TexCoord) * vec4(ourColor, 1.0);
 
   - 여러 텍스처들을 동시에 바인딩 가능
 
-## glActiveTexture 함수
+## **glActiveTexture 함수**
 
 ```cpp
 glActiveTexture(GL_TEXTURE0); // activate the texture unit first before binding texture
@@ -460,9 +460,9 @@ glBindTexture(GL_TEXTURE_2D, texture);
 
 = GL_TEXTURE8 == GL_TEXTURE0 + 8
 
-## fragment shader 수정
+## **fragment shader 수정**
 
-### mix 함수
+### **mix 함수**
 
 ```glsl
 #version 330 core
@@ -481,7 +481,7 @@ void main()
 
 - 파라미터 3 : 0.0 -> 첫번째 텍스처 , 1.0 -> 두번째 텍스처 , 0.2 -> 첫번째 80% 두번째20%
 
-### 다른 텍스처를 로드하고 생성
+### **다른 텍스처를 로드하고 생성**
 
 - RGBA를 사용하여 alpha 채널을 포함하고 있는 이미지임을 명시
 
@@ -533,6 +533,6 @@ stbi_set_flip_vertically_on_load(true);
 
 ![](https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2Fcy7GTB%2FbtrasucRE9d%2FUaJB98GtttcZ9CEKP4Gwj0%2Fimg.png)
 
-# link
+# **출처**
 
 [learn-opengl Textures](https://learnopengl.com/Getting-started/Textures)

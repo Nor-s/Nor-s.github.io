@@ -305,7 +305,7 @@ void processInput(GLFWwindow *window)
 }
 ```
 
-# link
+# **출처**
 
 [LearnOpenGL - Hello Window](https://learnopengl.com/Getting-started/Hello-Window)
 
