@@ -3,6 +3,7 @@ title: "[learn-opengl] Coordinate Systems"
 date: 2022-02-14T16:44:55Z
 category: ["graphics", "graphics-opengl"]
 tags: [opengl]
+math: true
 ---
 
 # **Coordinate Systems**
@@ -40,12 +41,12 @@ tags: [opengl]
 
 ![](https://learnopengl.com/img/getting-started/coordinate_systems.png)
 
-    1. **로컬 좌표**: 객체의 로컬 원점을 기준으로 한 좌표(객체가 시작하는 좌표)
-    2. **월드 좌표**: 월드의 원점에 상대적으로 배치된 다른 많은 객체가 있음.
-    3. **뷰 좌표**: 월드 좌표를 카메라 또는 뷰어의 시점에서 볼 때와 같은 방식
-    4. **클립 좌표**: 좌표가 뷰 공간에 있으면 좌표를 클립하기 위해 좌표를 투영하려고한다
-        - -1.0~1.0 범위로 처리, 어떤 정점이 화면에 나타날지 결정 (원근분할 => 정규화장치좌표)
-    5. 화면 좌표 : 클립좌표 => glViewport(뷰포트변환) => 화면 좌표 => rasterizer => fragment
+1. **로컬 좌표**: 객체의 로컬 원점을 기준으로 한 좌표(객체가 시작하는 좌표)
+2. **월드 좌표**: 월드의 원점에 상대적으로 배치된 다른 많은 객체가 있음.
+3. **뷰 좌표**: 월드 좌표를 카메라 또는 뷰어의 시점에서 볼 때와 같은 방식
+4. **클립 좌표**: 좌표가 뷰 공간에 있으면 좌표를 클립하기 위해 좌표를 투영하려고한다
+   - -1.0~1.0 범위로 처리, 어떤 정점이 화면에 나타날지 결정 (원근분할 => 정규화장치좌표)
+5. **화면** **좌표** : 클립좌표 => glViewport(뷰포트변환) => 화면 좌표 => rasterizer => fragment
 
 - 정점을 다른 공간으로 변형시키는 이유: 일부 작업이 특정 좌표계에서 더 이해하기 쉽거나 사용하기 쉬움.
   - ex. 로컬 공간에서 객체를 수정하는게 월드보다 더 쉬움
@@ -133,9 +134,9 @@ tags: [opengl]
 glm::ortho(0.0f, 800.0f, 0.0f, 600.0f, 0.1f, 100.0f);
 ```
 
-    - 파라미터 1, 2: 절두체의 왼, 오
-    - 파라미터 3, 4: 절두체의 밑, 위
-    - 파라미터 5, 6: near, far 평면 사이의 거리
+- 파라미터 1, 2: 절두체의 왼, 오
+- 파라미터 3, 4: 절두체의 밑, 위
+- 파라미터 5, 6: near, far 평면 사이의 거리
 
 - 지정된 projection 행렬은 `x`, `y`, `z`범위 값을 가진 모든 좌표들을 NDC로 변환한다.
 
@@ -174,14 +175,17 @@ glm::ortho(0.0f, 800.0f, 0.0f, 600.0f, 0.1f, 100.0f);
 glm::mat4 proj = glm::perspective(glm::radians(45.0f), (float)width/(float)height, 0.1f, 100.0f);
 ```
 
-    - 파라미터 1: fov(field of view):  뷰 공간의 크기를 설정함
-        - 현실적인 시점: 일반적인 45도
-        - 둠-스타일: 더 높은 값
-    - 파라미터 2: 뷰 포트의 너비를 높이로 나눈 값으로 설정, 화면의 비율 설정(종횡비)
-    - 파라미터 3: near, far 거리 설정
-        - 일반적으로 0.1f, 100.0f로 설정
+- 파라미터 1: fov(field of view): 뷰 공간의 크기를 설정함
 
-        > near 값을 너무 높게(10.0f 같이) 설정 될 때마다 OpenGL은 카메라에 가까운 모든 좌표 (0.0f, 10.0f)를 잘라내어 비디오 게임에서 익숙한 시각적 결과를 제공한다.
+  - 현실적인 시점: 일반적인 45도
+  - 둠-스타일: 더 높은 값
+
+- 파라미터 2: 뷰 포트의 너비를 높이로 나눈 값으로 설정, 화면의 비율 설정(종횡비)
+- 파라미터 3: near, far 거리 설정
+
+  - 일반적으로 0.1f, 100.0f로 설정
+
+  > near 값을 너무 높게(10.0f 같이) 설정 될 때마다 OpenGL은 카메라에 가까운 모든 좌표 (0.0f, 10.0f)를 잘라내어 비디오 게임에서 익숙한 시각적 결과를 제공한다.
 
 ### **정리**
 
@@ -295,14 +299,12 @@ glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
 
 ```cpp
 model = glm::rotate(model, (float)glfwGetTime() * glm::radians(50.0f), glm::vec3(0.5f, 1.0f, 0.0f));
-
 ```
 
 - 이제 `glDrawArrays`함수로 큐브를 그려보자.
 
 ```cpp
 glDrawArrays(GL_TRIANGLES, 0, 36);
-
 ```
 
 [영상 주소](https://learnopengl.com/video/getting-started/coordinate_system_no_depth.mp4)
