@@ -160,7 +160,7 @@ glm::ortho(0.0f, 800.0f, 0.0f, 600.0f, 0.1f, 100.0f);
   - 좌표들이 절단 좌표로 변환되고 나면, `-w`에서 `w`까지의 범위를 가짐.
   - 최종적으로 -1 과 1 사이의 범위에 있어야하므로 원근 분할 즉, `w`로 나눠야한다.
 
-  $out = \begin{pmatrix} x /w \\ y / w \\ z / w \end{pmatrix}$
+  $$out = \begin{pmatrix} x /w \\ y / w \\ z / w \end{pmatrix}$$
 
 - 그 계산 다음, 좌표들은 NDC에 있게 된다.
 
