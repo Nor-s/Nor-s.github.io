@@ -1,0 +1,605 @@
+Welcome back to OGLDEV guys.
+In this tutorial we are starting
+
+to take a look at skeletal animation 
+and how to implement it in OpenGL.
+
+Skeletal animation, or skinning, is 
+considered the standard way of animating
+
+almost any living creature that you can 
+think of and it can also be used to animate
+
+monsters, aliens, as well as various 
+types of machines such as robots.
+
+Therefore, it is a core technique in game 
+development so over the course of the next
+
+few tutorials we are going to do a deep 
+dive into it. I’m still in the process of
+
+developing this miniseries so not sure exactly how 
+many videos there will be. We’ll see how it goes.
+
+Assimp, the library that we’ve been using 
+to load models, has very good support for
+
+skeletal animation across several file 
+types so we will take advantage of it.
+
+The way that I’m going to cover this subject 
+is going to be very hands on oriented. I’ll
+
+provide an overview of the process and the 
+technique and then we will basically jump
+
+back and forth between the code and the 
+theory. We will understand some part of
+
+the algorithm and then see how to implement it in 
+C++ using OpenGL and then back to theory and etc.
+
+I’m going to use Blender as the modelling tool so 
+for simplicity I’ll just use the name Blender but
+
+of course all the major modelling tools support 
+skeletal animation as well. Just to clarify,
+
+I’m not a artist but for the purpose of making 
+this mini-series I did spend some time studying
+
+Blender because I think that the familiarity with 
+the tool where you create and animate the model
+
+gives you better understanding of 
+the developer part in this process.
+
+Now let’s take the human body as an example. 
+As you are probably aware, 70% of our body
+
+is water which is why we are so flexible. The 
+bones provide us with structure and robustness
+
+and without them we will simply drop down 
+to the floor. The bones are wrapped by flesh
+
+and the flesh is wrapped by the skin so basically, 
+the skin is carried or held by the bones. Now this
+
+is not going to be a lesson in anatomy. All I’m 
+saying is that the idea behind skeletal animation
+
+is pretty much borrowed from the real world.
+All the models that we’ve been using so far
+
+have been simply the exterior representation 
+of a real world object. Inside the object
+
+there is nothing. So in the context of skeletal 
+animation we call the model itself the skin. Which
+
+is why this technique is also called skinning. The 
+bones are the skeleton that, kind of, carries the
+
+skin as in the real world. But since we don’t have 
+any flesh in our model between the skeleton and
+
+the skin the replacement that Blender provides is 
+a list of vertices that are affected by each bone.
+
+This means that when the bone is animated, or to 
+put it in a language that is more common to us,
+
+when it is translated and rotated, the same 
+transformation which is applied to the bone
+
+must be applied on the vertices that are affected 
+by it. For example, when the bone of an arm is
+
+translated and rotated, the part of the mesh that 
+represents that arm is translated and rotated to
+
+follow the movement and rotation of the bone. 
+Calculating the transformations that must be
+
+applied on the vertices due to the movement of 
+the bones is the main goal of this technique.
+
+It is important to understand that only the skin 
+gets rendered, and not the skeleton. The job of
+
+the skeleton and the bones is simply to help us 
+define the range of movement that is available
+
+to the skin. For example, the angle between 
+the arm and the forearm can range between
+
+zero quote on quote when the two limbs touch each 
+other and a 180 degrees when the forearm is fully
+
+stretched. Beyond that the elbow will break. The 
+process in Blender of placing the virtual bones
+
+inside the skin, making them in the proper length 
+to fit the specific body part and connecting them
+
+together into a skeleton is called rigging. 
+Skinning is the process where you connect the
+
+vertices to the skeleton and define the amount by 
+which each vertex is affected by the bones. The
+
+last piece of the puzzle is animating and this is 
+where you use the available controls placed during
+
+rigging in order to create a set of keyframes 
+that define the movement of the bones over time.
+
+Skeletal animation has two main 
+characteristics that help us mimic
+
+real world movement. First, the skeleton defines a 
+hierarchy of bones. Most bones will have a parent
+
+so when the parent bone moves the child bone 
+follows. This relationship is one-way. The child
+
+may move without affecting its parent.
+Second, each vertex may be affected by
+
+more than one bone. This means that when 
+one or more bones move, the transformation
+
+of the vertices that are influenced by these 
+bones must somehow combine the transformations
+
+of each bone. Actually, if you have a model where 
+every vertex is fully controlled by a single bone,
+
+then that model is probably that of a robot or any 
+type of machine. A car is a simple example. You
+
+can use skeletal animation to animate the opening 
+and closing of car doors. The door is connected to
+
+the car by some kind of a joint but when the door 
+opens, the only vertices that are moving belong to
+
+the door. The rest of the car stays exactly where 
+it is. This is definitely not the case with living
+
+creatures. Here, we want the model to deform in a 
+way that will simulate the elasticity of the skin.
+
+This behavior is most evident around the joints.
+Skeletal animation allows us a high degree of
+
+flexibility in terms of calculating 
+the movement of each vertex
+
+based on all the bones that affect it. We do 
+this by assigning a weight to each combination
+
+of a bone and a vertex. The weight is a fraction 
+between zero and one and the sum of all weights
+
+per vertex should be one. We do the calculation as 
+a linear combination of the bone transformations
+
+and their weights. For example, if the weight 
+of the two bones affecting one vertex is a half,
+
+it means the vertex is equally influenced by both 
+bones and its movement will be the average of the
+
+movement of the two bones. If one weight is 
+0.9 and the other is 0.1 it means that this
+
+vertex is probably much closer to the first bone 
+so it will go along with it but there will still
+
+be some minor influence from the second bone that 
+may pull it a bit towards a different direction.
+
+Blender provides the artist with powerful tools 
+to set the weights of the different bones. Most
+
+artists will probably start with an automatic 
+assignment of weights. In this method Blender
+
+calculates the weights based on the distance 
+between the vertex and each bone. The next step
+
+will be to review the result and start fixing 
+and adjusting the model using weight painting.
+
+Weight painting is a feature in Blender 
+where you increase or decrease the weights
+
+of vertices for the selected bone by 
+going over them with a special brush.
+
+Usually, the artist will develop the skin first 
+and then structure the skeleton “inside” it.
+
+It makes sense because the bones must match the 
+dimensions of the body parts that will actually
+
+get rendered. At this stage, before the animation 
+process has started, the posture of the skin is
+
+called bind pose. This is very important because 
+all the underlying transformations and math will
+
+reference the bind pose as a starting position. 
+There are no restrictions in terms of how the
+
+model should look like in bind pose but the common 
+practice is to keep the model in this kind of
+
+relaxed posture without too many bending in the 
+area of the joints. If you search for “skeletal
+
+animation bind pose” in google images you will 
+find many examples of this posture for the human
+
+or semi human models with the arms stretched to 
+the sides and the legs are straight and relaxed.
+
+When you render the model without applying any 
+animation on it you should get it in bind pose.
+
+Once rigging and skinning have been completed 
+the model is ready for animation. Naturally,
+
+the same set of bones can be used 
+for multiple sets of animations.
+
+Think about all the possibilities the human body 
+provides in terms of movement and flexibility. All
+
+this is achieved with just 206 bones! Even with 
+a small subset of these bones in a human model
+
+you can still implement many animations. 
+Therefore, each animation set will simulate
+
+some kind of an activity such as walking, 
+running, fighting, etc. An animation set
+
+is composed of a series of transformations that 
+are applied on the skeleton as the artist animates
+
+it. These transformations may include, as usual, 
+scaling, rotation and translation. In the case
+
+of humans and many other living creatures we 
+will only encounter rotation and translation
+
+but the technique itself can support animated 
+scaling of bones as well. The transformations
+
+will be provided at regular intervals according 
+to some frame rate. For example, a 10 seconds
+
+animation at 24 frames per second will include 
+240 sets of transformations. These sets are
+
+usually very close so if the actual frame rate 
+in the game is higher than the animation frame
+
+rate we can interpolate between consecutive 
+transformations and get a finer animation.
+
+Since these transformations represent the 
+changes in the orientation of the bones we can
+
+apply them on the vertices that are influenced 
+by the bones and basically animate the model.
+
+OK, this is enough theory for now. I’ve 
+left out many details that we will need
+
+for the implementation but at this point I’d 
+like to get our hands dirty with some code.
+
+Now Skeletal animation is supported by various 
+file types and if you implement a loader
+
+for a specific file type you will probably need 
+your skeletal animation code to adhere to the
+
+conventions of that file type. However, since we 
+are using Assimp we only need our code to adhere
+
+to the conventions and specifics of this library 
+and this will allow us to support many file types.
+
+As I said, we’re going to implement the 
+technique step by step in a hands-on approach
+
+so let’s create a simple utility that will 
+parse the data structures created by Assimp
+
+and extract the relevant parts from it. 
+We will later incorporate this logic into
+
+our OpenGL application. This utility is not 
+required for actually running the animation
+
+but will be very handy for debugging, etc.
+so this utility is composed of a single file
+
+which I called assimp_sandbox.cpp and we've also 
+got a build script in the same directory called
+
+build_assimp_sandbox.sh to build it and it is very 
+simple we have the build flags right here called
+
+CPPFLAGS and for now I've included only -ggdb3 
+in order to build it with debug information for
+
+debugging and we've also got the link flags called 
+LDFLAGS which is a call to pkg-config --libs
+
+assimp I'm often using pkg-config in my build 
+scripts in order for my code to hopefully compile
+
+on as many machines and systems as possible
+okay so if you run this on the command line
+
+pkg-config --libs assimp in this case on my 
+machine it tells you that the link command is
+
+-lassimp and on other systems it 
+may generate a different command
+
+okay and the final build command is very simple 
+we call g++ the name of the cpp file the compile
+
+flags the link flags -o and the name of the binary
+okay so now let's take a look at the cpp
+
+file and by the way I have a video on loading 
+models using Assimp so definitely check that
+
+out if you want more details I'll go 
+over the major details in this video
+
+okay so first we need to include 
+these three headers for Assimp
+
+okay let's scroll down to the bottom and 
+here we have your standard main function
+
+we're checking the number of parameters here and 
+needs to be two because there's a single parameter
+
+to this utility which is the model file name
+okay so if that's not the case we simply
+
+exit the utility
+next we pick up the file name
+
+from location 1 in the argv array and we 
+define an object of the Assimp Importer class
+
+which basically handles all 
+the Assimp parsing stuff
+
+next we call readFile on the Importer object 
+using the file name and the load flag for Assimp
+
+which I defined for convenience right here and 
+this is pretty standard we've done this already
+
+triangulate all the polygons in the mesh 
+generate normals and join identical vertices
+
+we check for errors and we call parse_scene 
+using the returned aiScene object from readFile
+
+so aiScene is the main object that handles 
+all our interaction with Assimp and it has
+
+several interesting functions as 
+well as members that we can access
+
+in this case we're going directly to the meshes
+okay there is an array of aiMesh objects which
+
+is where all the vertices live and 
+the indices as well as the bones
+
+so parse_scene is very simple it just 
+calls parse_meshes with the aiScene object
+
+and in the future we will have a function 
+to handle the hierarchy and the animations
+
+okay so this will grow and develop 
+over the next few tutorials
+
+so we have parse_meshes here and we 
+start by printing the number of meshes
+
+in the aiScene object which you can find 
+in the mNumMeshes attribute in the aiScene
+
+next we prepare a few counters for the total 
+number of vertices and indices and bones
+
+we loop over the number of 
+meshes and we extract each mesh
+
+from the mMeshes array based on the index
+we take the number of vertices
+
+we calculate the number of indices which is the 
+number of faces times 3 because we've triangulated
+
+all the polygons and we also access num bones
+okay so in the aiMesh structure
+
+we have an array of bones right here and we have 
+the number of bones in this attribute mNumBones
+
+next we calculate the total number 
+of vertices indices and bones
+
+which we're going to print at the end of this 
+function and this is mostly for informative
+
+purposes just to make sure that everything is 
+working correctly the important piece is here
+
+where we call HasBones which is a boolean function 
+that tells us whether this mesh has any bones in
+
+it and then we call parse_mesh_bones on the 
+specific mesh that we're currently processing
+
+so now let's go to pars_mesh_bones 
+which is up here and this is also
+
+very simple we loop over the number of bones 
+in this mesh and we call parse_single_bone
+
+now if we run this right now and I'll 
+use a model which is checked into my repo
+
+called the boblampclean.md5mesh 
+which is by the way from doom 3
+
+and you can see that it tells us that there are 
+six meshes and these are the names of the meshes
+
+okay we have a body a face a helmet grill grill 
+and another body and for each mesh we can see
+
+the number of vertices and then this is and this 
+is the important thing here the number of bones
+
+okay so the body has 28 bones and the face 
+has just two bones and these guys have one
+
+bone and the last one has two bones
+okay and if we load it in blender we
+
+can actually see right here on the right 
+hand side that these meshes correspond to
+
+components of the mesh inside blender
+so we have the grill which this guy is holding
+
+and we have the body okay and this part of the 
+body is actually the sword the face and the helmet
+
+okay so now let's see parse_mesh_bones which 
+is right here and this is a simple loop over
+
+the number of bones in the mesh and we're 
+calling parse_single_bone for each bone from
+
+this array and we'll also we're also passing in 
+the index of the bone which we will later see
+
+so let's see what we have in this aiBone structure 
+and there are only four public attributes okay we
+
+have the name of the bone which is used for 
+informative purposes as you saw in blender
+
+you want to name the bone so you'll be 
+able to remember what it's supposed to do
+
+and we have the number of weights 
+here which is actually the number
+
+of elements in this array mWeights
+okay we'll see that in a second we have
+
+an attribute called mOffsetMatrix which is a four 
+by four matrix and it tells us that this matrix
+
+transforms from mesh space to bone space in bind 
+pose okay so this may sound a bit intimidating
+
+but we will see how to use that in a future video
+and the last attribute is the mWeights array
+
+which is of the aiVertexWeight structure and 
+this structure contains just two attributes
+
+okay so every element in the structure has a 
+vertex id which tells us the index of the vertex
+
+that is influenced by this bone and the strength 
+of that influence which must be in the range
+
+0 to 1 as we talked about earlier so in the 
+parse_single_bone function we loop over the number
+
+of weights in the bone and we extract the vertex 
+weight element from the mWeights array and let
+
+me just un-comment all these printf calls we're 
+basically printing the vertex id and the weight
+
+now let's run this again and now we're getting 
+the list of bones for each mesh as well as the
+
+vertices that are influenced by it
+okay so here we can see
+
+that the first bone bone zero is called pubis 
+and the number of vertices affected by this bone
+
+is 190 and here we can see all the indices 
+of these vertices as well as their weights
+
+okay so we can see that this 
+model is actually very simple
+
+so when we glance through this it seems like 
+when a vertex is influenced by two bones
+
+then the weight of each bone will be a half 
+and if it is influenced by three bones then
+
+the weight will be a third okay so always 
+the weight for each bone will be the
+
+same as the other bones
+okay so it averages out
+
+and here's the next bone which is pelvis 
+254 vertices then the spine and it continues
+
+like that so the total number of bones is 35
+this brings us to the first challenge
+
+each bone is mapped to the vertices that it 
+influences and many vertices are influenced
+
+by multiple bones but skeletal animation 
+is implemented in the vertex shader because
+
+this is basically the only place where we can 
+actually change the position of the vertex
+
+therefore what we really need is a 
+reversed mapping from each vertex
+
+to the bones that influence it this info 
+must be provided to the vertex shader
+
+so that we can calculate the transformation 
+of each vertex based on all these bones
+All this and more will be 
+covered in the next tutorial
+if you found this video helpful please hit the 
+like button and subscribe if you haven't already
+thank you so much for watching and I will see 
+you in the next tutorial on Skeletal Animation
