@@ -22,7 +22,7 @@ tags: [unreal4]
 
 ### 개요
 
-![](img/UE4animation.png)
+![](./img/UE4animation.png)
 
 - 스켈레톤이 중심
   - 스켈레톤 메시 : 엔진 퀄리티 기능- LOD와 세트
@@ -38,7 +38,7 @@ tags: [unreal4]
 
 ### 스켈레톤과 스켈레톤 메시
 
-![](img/skeletal.png)
+![](./img/skeletal.png)
 
 - FBX 파일을 언리얼 엔진으로 임포트하면,
   - 동일한 FBX 파일 내에 완성된 애니메이션과 서로 다른 애니메이션 다수가 있을것임
