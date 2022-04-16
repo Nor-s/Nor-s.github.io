@@ -1,0 +1,297 @@
+<!DOCTYPE html><html lang="ko-KR" ><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><meta name="day-prompt" content="days ago"><meta name="hour-prompt" content="hours ago"><meta name="minute-prompt" content="minutes ago"><meta name="justnow-prompt" content="just now"><meta name="generator" content="Jekyll v4.2.1" /><meta property="og:title" content="[learn-opengl] Advanced OpenGL: Cubemaps" /><meta property="og:locale" content="ko_KR" /><meta name="description" content="Cubemaps" /><meta property="og:description" content="Cubemaps" /><link rel="canonical" href="https://nor-s.github.io/posts/2022/03/18/09/28/opengl23/" /><meta property="og:url" content="https://nor-s.github.io/posts/2022/03/18/09/28/opengl23/" /><meta property="og:site_name" content="RohRoh" /><meta property="og:type" content="article" /><meta property="article:published_time" content="2022-03-18T09:28:02+09:00" /><meta name="twitter:card" content="summary" /><meta property="twitter:title" content="[learn-opengl] Advanced OpenGL: Cubemaps" /><meta name="twitter:site" content="@twitter_username" /><meta name="google-site-verification" content="google_meta_tag_verification" /> <script type="application/ld+json"> {"dateModified":"2022-03-19T23:33:31+09:00","datePublished":"2022-03-18T09:28:02+09:00","description":"Cubemaps","mainEntityOfPage":{"@type":"WebPage","@id":"https://nor-s.github.io/posts/2022/03/18/09/28/opengl23/"},"url":"https://nor-s.github.io/posts/2022/03/18/09/28/opengl23/","@type":"BlogPosting","headline":"[learn-opengl] Advanced OpenGL: Cubemaps","@context":"https://schema.org"}</script><title>[learn-opengl] Advanced OpenGL: Cubemaps | RohRoh</title><link rel="apple-touch-icon" sizes="180x180" href="/assets/img/favicons/apple-touch-icon.png"><link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicons/favicon-32x32.png"><link rel="icon" type="image/png" sizes="16x16" href="/assets/img/favicons/favicon-16x16.png"><link rel="manifest" href="/assets/img/favicons/site.webmanifest"><link rel="shortcut icon" href="/assets/img/favicons/favicon.ico"><meta name="apple-mobile-web-app-title" content="RohRoh"><meta name="application-name" content="RohRoh"><meta name="msapplication-TileColor" content="#da532c"><meta name="msapplication-config" content="/assets/img/favicons/browserconfig.xml"><meta name="theme-color" content="#ffffff"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous"><link rel="dns-prefetch" href="https://fonts.gstatic.com"><link rel="preconnect" href="https://www.google-analytics.com" crossorigin="use-credentials"><link rel="dns-prefetch" href="https://www.google-analytics.com"><link rel="preconnect" href="https://www.googletagmanager.com" crossorigin="anonymous"><link rel="dns-prefetch" href="https://www.googletagmanager.com"><link rel="preconnect" href="https://cdn.jsdelivr.net"><link rel="dns-prefetch" href="https://cdn.jsdelivr.net"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.11.2/css/all.min.css"><link rel="stylesheet" href="/assets/css/style.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/afeld/bootstrap-toc@1.0.1/dist/bootstrap-toc.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/magnific-popup@1.1.0/dist/magnific-popup.min.css"> <script src="https://cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script> <script type="text/javascript"> class ModeToggle { static get MODE_KEY() { return "mode"; } static get DARK_MODE() { return "dark"; } static get LIGHT_MODE() { return "light"; } static get ID() { return "mode-toggle"; } constructor() { if (this.hasMode) { if (this.isDarkMode) { if (!this.isSysDarkPrefer) { this.setDark(); } } else { if (this.isSysDarkPrefer) { this.setLight(); } } } let self = this; /* always follow the system prefers */ this.sysDarkPrefers.addEventListener("change", () => { if (self.hasMode) { if (self.isDarkMode) { if (!self.isSysDarkPrefer) { self.setDark(); } } else { if (self.isSysDarkPrefer) { self.setLight(); } } self.clearMode(); } self.notify(); }); } /* constructor() */ get sysDarkPrefers() { return window.matchMedia("(prefers-color-scheme: dark)"); } get isSysDarkPrefer() { return this.sysDarkPrefers.matches; } get isDarkMode() { return this.mode === ModeToggle.DARK_MODE; } get isLightMode() { return this.mode === ModeToggle.LIGHT_MODE; } get hasMode() { return this.mode != null; } get mode() { return sessionStorage.getItem(ModeToggle.MODE_KEY); } /* get the current mode on screen */ get modeStatus() { if (this.isDarkMode || (!this.hasMode && this.isSysDarkPrefer)) { return ModeToggle.DARK_MODE; } else { return ModeToggle.LIGHT_MODE; } } setDark() { $('html').attr(ModeToggle.MODE_KEY, ModeToggle.DARK_MODE); sessionStorage.setItem(ModeToggle.MODE_KEY, ModeToggle.DARK_MODE); } setLight() { $('html').attr(ModeToggle.MODE_KEY, ModeToggle.LIGHT_MODE); sessionStorage.setItem(ModeToggle.MODE_KEY, ModeToggle.LIGHT_MODE); } clearMode() { $('html').removeAttr(ModeToggle.MODE_KEY); sessionStorage.removeItem(ModeToggle.MODE_KEY); } /* Notify another plugins that the theme mode has changed */ notify() { window.postMessage({ direction: ModeToggle.ID, message: this.modeStatus }, "*"); } } /* ModeToggle */ const toggle = new ModeToggle(); function flipMode() { if (toggle.hasMode) { if (toggle.isSysDarkPrefer) { if (toggle.isLightMode) { toggle.clearMode(); } else { toggle.setLight(); } } else { if (toggle.isDarkMode) { toggle.clearMode(); } else { toggle.setDark(); } } } else { if (toggle.isSysDarkPrefer) { toggle.setLight(); } else { toggle.setDark(); } } toggle.notify(); } /* flipMode() */ </script><body data-spy="scroll" data-target="#toc"><div id="sidebar" class="d-flex flex-column align-items-end" lang="en"><div class="profile-wrapper text-center"><div id="avatar"> <a href="/" alt="avatar" class="mx-auto"> <img src="/commons/avatar.png" alt="avatar" onerror="this.style.display='none'"> </a></div><div class="site-title mt-3"> <a href="/">RohRoh</a></div><div class="site-subtitle font-italic">my blog</div></div><ul class="w-100"><li class="nav-item"> <a href="/" class="nav-link"> <i class="fa-fw fas fa-home ml-xl-3 mr-xl-3 unloaded"></i> <span>HOME</span> </a><li class="nav-item"> <a href="/categories/" class="nav-link"> <i class="fa-fw fas fa-stream ml-xl-3 mr-xl-3 unloaded"></i> <span>CATEGORIES</span> </a><li class="nav-item"> <a href="/tags/" class="nav-link"> <i class="fa-fw fas fa-tag ml-xl-3 mr-xl-3 unloaded"></i> <span>TAGS</span> </a><li class="nav-item"> <a href="/archives/" class="nav-link"> <i class="fa-fw fas fa-archive ml-xl-3 mr-xl-3 unloaded"></i> <span>ARCHIVES</span> </a><li class="nav-item"> <a href="/about/" class="nav-link"> <i class="fa-fw fas fa-info-circle ml-xl-3 mr-xl-3 unloaded"></i> <span>ABOUT</span> </a></ul><div class="sidebar-bottom mt-auto d-flex flex-wrap justify-content-center align-items-center"> <button class="mode-toggle btn" aria-label="Switch Mode"> <i class="fas fa-adjust"></i> </button> <span class="icon-border"></span> <a href="https://github.com/Nor-s" aria-label="github" target="_blank" rel="noopener"> <i class="fab fa-github"></i> </a> <a href="/feed.xml" aria-label="rss" > <i class="fas fa-rss"></i> </a></div></div><div id="topbar-wrapper" class="row justify-content-center topbar-down"><div id="topbar" class="col-11 d-flex h-100 align-items-center justify-content-between"> <span id="breadcrumb"> <span> <a href="/"> Home </a> </span> <span>[learn-opengl] Advanced OpenGL: Cubemaps</span> </span> <i id="sidebar-trigger" class="fas fa-bars fa-fw"></i><div id="topbar-title"> Post</div><i id="search-trigger" class="fas fa-search fa-fw"></i> <span id="search-wrapper" class="align-items-center"> <i class="fas fa-search fa-fw"></i> <input class="form-control" id="search-input" type="search" aria-label="search" autocomplete="off" placeholder="Search..."> <i class="fa fa-times-circle fa-fw" id="search-cleaner"></i> </span> <span id="search-cancel" >Cancel</span></div></div><div id="main-wrapper"><div id="main"><div class="row"><div id="core-wrapper" class="col-12 col-lg-11 col-xl-8"><div class="post pl-1 pr-1 pl-sm-2 pr-sm-2 pl-md-4 pr-md-4"><h1 data-toc-skip>[learn-opengl] Advanced OpenGL: Cubemaps</h1><div class="post-meta text-muted"><div> <em> <a href="https://github.com/Nor-s">roh</a> </em></div><div class="d-flex"><div> <span> <em class="timeago" date="2022-03-18 09:28:02 +0900" data-toggle="tooltip" data-placement="bottom" title="Fri, Mar 18, 2022, 9:28 AM +0900" >Mar 18</em> </span> <span> Updated <em class="timeago" date="2022-03-19 23:33:31 +0900 " data-toggle="tooltip" data-placement="bottom" title="Sat, Mar 19, 2022, 11:33 PM +0900" >Mar 19</em> </span> <span class="readtime" data-toggle="tooltip" data-placement="bottom" title="4047 words"> <em>22 min</em> read</span></div></div></div><div class="post-content"><h1 id="cubemaps"><strong>Cubemaps</strong></h1><ul><li>지금까지 2D 텍스처들을 사용해왔다.<ul><li>다른 유형도 존재</ul><li><p>이번에 다룰 유형은 여러 텍스처들을 하나의 텍스처로 매핑한 텍스처이다.</p><ul><li>이를 <code class="language-plaintext highlighter-rouge">cubemaps</code>라고 부른다.</ul><li><p>Cubemap은 각 면을 형성하는 2D 텍스처들을 포함하고 있는 텍스처이다.</p><ul><li>유용한 특성: 방향 벡터를 사용하여 인덱싱/ 샘플링될 수 있다는점.<li>ex) 중앙에 위치해 있는 방향 벡터의 원점과 1x1x1의 단위 큐브<ul><li>이 cubemap으로부터 텍스처를 샘플링하는 것은 다음 이미지 처럼 보인다. (주황색 = 방향벡터) <img data-proofer-ignore data-src="https://learnopengl.com/img/advanced/cubemaps_sampling.png" alt="" /><li>방향 벡터의 크기(magnitude)는 상관없다.<li>방향 벡터만 제공된다면, OpenGL이 방향과 맞닿는 해당 텍셀을 얻고, 적절히 샘플링된 텍스처 값을 리턴한다.</ul></ul><li>이러한 cubemap을 첨부한 큐브도형에서 cubemap을 샘플링하는 방향 벡터는 (보간된) vertex 위치와 비슷하다.<ul><li>이 방법으로 우리는 이 큐브가 원점에 존재한다면, 이 큐브의 실제 위치 벡터들을 사용하여 cubemap을 샘플링할 수 있다.<li>그런 다음 이 큐브의 vertex 위치를 텍스처 좌표로서 얻을 수 있다.<li>그 결과 cubemap의 적절한 각 face를 접근할 수 있는 텍스처 좌표를얻을 수 있다.</ul></ul><h2 id="creating-a-cubemap"><strong>Creating a cubemap</strong><a href="#creating-a-cubemap"><i class="fas fa-hashtag"></i></a></h2></h2><ul><li>적절한 텍스처를 생성하고, 적절한 텍스처 타겟에 바인딩해야한다.<ul><li><code class="language-plaintext highlighter-rouge">GL_TEXTURE_CUBE_MAP</code>에 바인딩해야함.</ul></ul><div class="language-cpp highlighter-rouge"><div class="code-header"> <span label-text="Cpp"><i class="fas fa-code small"></i></span> <button aria-label="copy" title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+</pre><td class="rouge-code"><pre><span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">textureID</span><span class="p">;</span>
+<span class="n">glGenTextures</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">textureID</span><span class="p">);</span>
+<span class="n">glBindTexture</span><span class="p">(</span><span class="n">GL_TEXTURE_CUBE_MAP</span><span class="p">,</span> <span class="n">textureID</span><span class="p">);</span>
+</pre></table></code></div></div><ul><li>6개의 텍스처를 생성해야하므로 6번 glTexImage2D 함수를 6번 호출해야한다.<ul><li>텍스처 타겟 파라미터에 cubemap의 특정 면을 설정한다.</ul></ul><div class="table-wrapper"><table><thead><tr><th>Texture target<th>Orientation<tbody><tr><td>GL_TEXTURE_CUBE_MAP_POSITIVE_X<td>Right<tr><td>GL_TEXTURE_CUBE_MAP_NEGATIVE_X<td>Left<tr><td>GL_TEXTURE_CUBE_MAP_POSITIVE_Y<td>Top<tr><td>GL_TEXTURE_CUBE_MAP_NEGATIVE_Y<td>Bottom<tr><td>GL_TEXTURE_CUBE_MAP_POSITIVE_Z<td>Back<tr><td>GL_TEXTURE_CUBE_MAP_NEGATIVE_Z<td>Front</table></div><ul><li>이 enum 변수들은 연속적으로 증가하는 int 변수이므로, 반복문으로 처리 가능하다.<ul><li><code class="language-plaintext highlighter-rouge">POSITIVE_X</code> 부터 시작하여 1씩증가시키자</ul></ul><div class="language-cpp highlighter-rouge"><div class="code-header"> <span label-text="Cpp"><i class="fas fa-code small"></i></span> <button aria-label="copy" title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+</pre><td class="rouge-code"><pre><span class="kt">int</span> <span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="p">,</span> <span class="n">nrChannels</span><span class="p">;</span>
+<span class="kt">unsigned</span> <span class="kt">char</span> <span class="o">*</span><span class="n">data</span><span class="p">;</span>
+<span class="k">for</span><span class="p">(</span><span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">textures_faces</span><span class="p">.</span><span class="n">size</span><span class="p">();</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">stbi_load</span><span class="p">(</span><span class="n">textures_faces</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">c_str</span><span class="p">(),</span> <span class="o">&amp;</span><span class="n">width</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">height</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">nrChannels</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+    <span class="n">glTexImage2D</span><span class="p">(</span>
+        <span class="n">GL_TEXTURE_CUBE_MAP_POSITIVE_X</span> <span class="o">+</span> <span class="n">i</span><span class="p">,</span>
+        <span class="mi">0</span><span class="p">,</span> <span class="n">GL_RGB</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">GL_RGB</span><span class="p">,</span> <span class="n">GL_UNSIGNED_BYTE</span><span class="p">,</span> <span class="n">data</span>
+    <span class="p">);</span>
+<span class="p">}</span>
+</pre></table></code></div></div><ul><li><p><code class="language-plaintext highlighter-rouge">textures_faces</code> 벡터는 cubemap 순서와 같게 텍스처의 경로를 가지고 있음.</p><li><p>cubemap은 또한 wrapping, filtering method를 지정할 수 있다.</p></ul><div class="language-cpp highlighter-rouge"><div class="code-header"> <span label-text="Cpp"><i class="fas fa-code small"></i></span> <button aria-label="copy" title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+</pre><td class="rouge-code"><pre><span class="n">glTexParameteri</span><span class="p">(</span><span class="n">GL_TEXTURE_CUBE_MAP</span><span class="p">,</span> <span class="n">GL_TEXTURE_MAG_FILTER</span><span class="p">,</span> <span class="n">GL_LINEAR</span><span class="p">);</span>
+<span class="n">glTexParameteri</span><span class="p">(</span><span class="n">GL_TEXTURE_CUBE_MAP</span><span class="p">,</span> <span class="n">GL_TEXTURE_MIN_FILTER</span><span class="p">,</span> <span class="n">GL_LINEAR</span><span class="p">);</span>
+<span class="n">glTexParameteri</span><span class="p">(</span><span class="n">GL_TEXTURE_CUBE_MAP</span><span class="p">,</span> <span class="n">GL_TEXTURE_WRAP_S</span><span class="p">,</span> <span class="n">GL_CLAMP_TO_EDGE</span><span class="p">);</span>
+<span class="n">glTexParameteri</span><span class="p">(</span><span class="n">GL_TEXTURE_CUBE_MAP</span><span class="p">,</span> <span class="n">GL_TEXTURE_WRAP_T</span><span class="p">,</span> <span class="n">GL_CLAMP_TO_EDGE</span><span class="p">);</span>
+<span class="n">glTexParameteri</span><span class="p">(</span><span class="n">GL_TEXTURE_CUBE_MAP</span><span class="p">,</span> <span class="n">GL_TEXTURE_WRAP_R</span><span class="p">,</span> <span class="n">GL_CLAMP_TO_EDGE</span><span class="p">);</span>
+</pre></table></code></div></div><ul><li><p><code class="language-plaintext highlighter-rouge">GL_TEXTURE_WRAP_R</code> 은 텍스처의 3번째 차원(z와 동일)에 해당하는 R 좌표에 대한 wrapping method를 설정한다.</p><ul><li>두 면의 접합된 부분에 있는 텍스처 좌표가 정확한 면을 가리키지 않을 수 있으므로(일부 하드웨어들의 제한에 의해) <code class="language-plaintext highlighter-rouge">GL_CLAMP_TO_EDGE</code>를 사용하여 면 사이를 샘플링할때마다, OpenGL이 항상 그들의 모서리 값을 리턴하도록 해준다.</ul><li><p>그런 다음 이 cubemap을 사용할 오브젝트를 그리기 전에, 해당 텍스처 유닛을 활성화하고 렌더링하기 전에 cubemap을 바인딩한다.</p><li><p>fragment shader 내부에서 샘플러 타입인 <code class="language-plaintext highlighter-rouge">samplerCube</code>를 사용해야한다.</p><ul><li>그리고 vec3 타입의 방향벡터를 사용하여 샘플링할 것이다.</ul></ul><div class="language-glsl highlighter-rouge"><div class="code-header"> <span label-text="Glsl"><i class="fas fa-code small"></i></span> <button aria-label="copy" title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+</pre><td class="rouge-code"><pre><span class="k">in</span> <span class="kt">vec3</span> <span class="n">textureDir</span><span class="p">;</span> <span class="c1">// direction vector representing a 3D texture coordinate</span>
+<span class="k">uniform</span> <span class="kt">samplerCube</span> <span class="n">cubemap</span><span class="p">;</span> <span class="c1">// cubemap texture sampler</span>
+
+<span class="kt">void</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">FragColor</span> <span class="o">=</span> <span class="n">texture</span><span class="p">(</span><span class="n">cubemap</span><span class="p">,</span> <span class="n">textureDir</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></table></code></div></div><ul><li>이 큐브맵으로, skybox 같은 흥미로운것을 구현할 수 있다.</ul><h2 id="skybox"><strong>Skybox</strong><a href="#skybox"><i class="fas fa-hashtag"></i></a></h2></h2><ul><li><p>Skybox는 전체 scene을 둘러싸고 주변 환경 6개의 이미지를 가지고 있는 큰 큐브이다.</p><ul><li>보통 비디오게임에서 skybox의 예는 산, 구름, 별이 빛나는 밤하늘 이미지 <img data-proofer-ignore data-src="https://learnopengl.com/img/advanced/cubemaps_morrowind.jpg" alt="" /></ul><li>이러한 skybox 이미지들은 <a href="http://www.custommapmakers.org/viewtopic.php?f=19&amp;t=750">온라인</a>에서 충분히 찾을 수 있음<li>일반적으로 아래와 같은 패턴을 취한다.</ul><p><img data-proofer-ignore data-src="https://learnopengl.com/img/advanced/cubemaps_skybox.png" alt="" /></p><ul><li>이 6개의 면들을 접어서 큐브를만들려면 거대한 풍경을 시뮬레이션할 수 있는 완전히 텍스처가 입혀진 큐브를 얻을 수 있다.<ul><li>이러한 형식을 가진 일부 리소스들은 6개의 이미지들로 추출해야한다.<li>대부분의 경우 6개의 단일 텍스처로 제공된다.</ul><li>위 skybox는 <a href="https://learnopengl.com/img/textures/skybox.zip">여기</a>에서 다운받을 수 있다.</ul><h3 id="loading-a-skybox"><strong>Loading a skybox</strong><a href="#loading-a-skybox"><i class="fas fa-hashtag"></i></a></h3></h3><ul><li>다운받은 텍스처의 경로가 들어있는 faces를 벡터로 받게 하자.</ul><div class="language-cpp highlighter-rouge"><div class="code-header"> <span label-text="Cpp"><i class="fas fa-code small"></i></span> <button aria-label="copy" title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+</pre><td class="rouge-code"><pre><span class="kt">unsigned</span> <span class="kt">int</span> <span class="nf">loadCubemap</span><span class="p">(</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span> <span class="n">faces</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">textureID</span><span class="p">;</span>
+    <span class="n">glGenTextures</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">textureID</span><span class="p">);</span>
+    <span class="n">glBindTexture</span><span class="p">(</span><span class="n">GL_TEXTURE_CUBE_MAP</span><span class="p">,</span> <span class="n">textureID</span><span class="p">);</span>
+
+    <span class="kt">int</span> <span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="p">,</span> <span class="n">nrChannels</span><span class="p">;</span>
+    <span class="k">for</span> <span class="p">(</span><span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">faces</span><span class="p">.</span><span class="n">size</span><span class="p">();</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="kt">unsigned</span> <span class="kt">char</span> <span class="o">*</span><span class="n">data</span> <span class="o">=</span> <span class="n">stbi_load</span><span class="p">(</span><span class="n">faces</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">c_str</span><span class="p">(),</span> <span class="o">&amp;</span><span class="n">width</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">height</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">nrChannels</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="n">glTexImage2D</span><span class="p">(</span><span class="n">GL_TEXTURE_CUBE_MAP_POSITIVE_X</span> <span class="o">+</span> <span class="n">i</span><span class="p">,</span>
+                         <span class="mi">0</span><span class="p">,</span> <span class="n">GL_RGB</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">GL_RGB</span><span class="p">,</span> <span class="n">GL_UNSIGNED_BYTE</span><span class="p">,</span> <span class="n">data</span>
+            <span class="p">);</span>
+            <span class="n">stbi_image_free</span><span class="p">(</span><span class="n">data</span><span class="p">);</span>
+        <span class="p">}</span>
+        <span class="k">else</span>
+        <span class="p">{</span>
+            <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">"Cubemap tex failed to load at path: "</span> <span class="o">&lt;&lt;</span> <span class="n">faces</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+            <span class="n">stbi_image_free</span><span class="p">(</span><span class="n">data</span><span class="p">);</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+    <span class="n">glTexParameteri</span><span class="p">(</span><span class="n">GL_TEXTURE_CUBE_MAP</span><span class="p">,</span> <span class="n">GL_TEXTURE_MIN_FILTER</span><span class="p">,</span> <span class="n">GL_LINEAR</span><span class="p">);</span>
+    <span class="n">glTexParameteri</span><span class="p">(</span><span class="n">GL_TEXTURE_CUBE_MAP</span><span class="p">,</span> <span class="n">GL_TEXTURE_MAG_FILTER</span><span class="p">,</span> <span class="n">GL_LINEAR</span><span class="p">);</span>
+    <span class="n">glTexParameteri</span><span class="p">(</span><span class="n">GL_TEXTURE_CUBE_MAP</span><span class="p">,</span> <span class="n">GL_TEXTURE_WRAP_S</span><span class="p">,</span> <span class="n">GL_CLAMP_TO_EDGE</span><span class="p">);</span>
+    <span class="n">glTexParameteri</span><span class="p">(</span><span class="n">GL_TEXTURE_CUBE_MAP</span><span class="p">,</span> <span class="n">GL_TEXTURE_WRAP_T</span><span class="p">,</span> <span class="n">GL_CLAMP_TO_EDGE</span><span class="p">);</span>
+    <span class="n">glTexParameteri</span><span class="p">(</span><span class="n">GL_TEXTURE_CUBE_MAP</span><span class="p">,</span> <span class="n">GL_TEXTURE_WRAP_R</span><span class="p">,</span> <span class="n">GL_CLAMP_TO_EDGE</span><span class="p">);</span>
+
+    <span class="k">return</span> <span class="n">textureID</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></table></code></div></div><ul><li>그다음, 이 함수를 호출하기전에 텍스처 경로를 vector에 선언</ul><div class="language-cpp highlighter-rouge"><div class="code-header"> <span label-text="Cpp"><i class="fas fa-code small"></i></span> <button aria-label="copy" title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+</pre><td class="rouge-code"><pre><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span> <span class="n">faces</span><span class="p">;</span>
+<span class="p">{</span>
+    <span class="s">"right.jpg"</span><span class="p">,</span>
+    <span class="s">"left.jpg"</span><span class="p">,</span>
+    <span class="s">"top.jpg"</span><span class="p">,</span>
+    <span class="s">"bottom.jpg"</span><span class="p">,</span>
+    <span class="s">"front.jpg"</span><span class="p">,</span>
+    <span class="s">"back.jpg"</span>
+<span class="p">};</span>
+<span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">cubemapTexture</span> <span class="o">=</span> <span class="n">loadCubemap</span><span class="p">(</span><span class="n">faces</span><span class="p">);</span>
+</pre></table></code></div></div><ul><li>이제 skybox를 cubemap으로서 불러오고, texture에 id를 저장했다.<ul><li>이 것을 큐브에 바인딩할 수 있고, 언제든 배경으로 사용 가능하다.</ul></ul><h3 id="displaying-a-skybox"><strong>Displaying a skybox</strong><a href="#displaying-a-skybox"><i class="fas fa-hashtag"></i></a></h3></h3><ul><li><p>skybox는 cube 위에 그려지기 때문에 또 다른 VAO VBO가 필요하고, 다른 오브젝트들과 마찬가지로 vertex 세트가 필요하다.</p><li><p><a href="https://learnopengl.com/code_viewer.php?code=advanced/cubemaps_skybox_data">vertex data</a></p><li><p>cubemap은 큐브의 위치(local positions)를 텍스처 좌표로 사용하여 샘플링될 수 있다.</p><ul><li>큐브가 원점(0,0,0)에 위치해있을 때, 각 위치 벡터들은 원점으로부터의 방향벡터와 동일하다.<li>그러므로 텍스처 좌표는 필요없다.</ul><li><p>이 skybox를 렌더링하기 위해 새로운 shader 세트가 필요하다.</p><ul><li>오직 하나의 vertex attribute만 필요하므로, vertex는 간단하다.</ul></ul><div class="language-glsl highlighter-rouge"><div class="code-header"> <span label-text="Glsl"><i class="fas fa-code small"></i></span> <button aria-label="copy" title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+</pre><td class="rouge-code"><pre><span class="cp">#version 330 core
+</span><span class="k">layout</span> <span class="p">(</span><span class="n">location</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span> <span class="k">in</span> <span class="kt">vec3</span> <span class="n">aPos</span><span class="p">;</span>
+
+<span class="k">out</span> <span class="kt">vec3</span> <span class="n">TexCoords</span><span class="p">;</span>
+
+<span class="k">uniform</span> <span class="kt">mat4</span> <span class="n">projection</span><span class="p">;</span>
+<span class="k">uniform</span> <span class="kt">mat4</span> <span class="n">view</span><span class="p">;</span>
+
+<span class="kt">void</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">TexCoords</span> <span class="o">=</span> <span class="n">aPos</span><span class="p">;</span>
+    <span class="nb">gl_Position</span> <span class="o">=</span> <span class="n">projection</span> <span class="o">*</span> <span class="n">view</span> <span class="o">*</span> <span class="kt">vec4</span><span class="p">(</span><span class="n">aPos</span><span class="p">,</span> <span class="mi">1</span><span class="p">.</span><span class="mi">0</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></table></code></div></div><ul><li>이 vertex shader는 입력받은 위치 벡터를 fragment shader로 보낼 텍스처 좌표로 출력한다.<ul><li>fragment shader는 이들을 입력받아 <code class="language-plaintext highlighter-rouge">samplerCube</code>를 샘플링할 것이다.</ul></ul><div class="language-glsl highlighter-rouge"><div class="code-header"> <span label-text="Glsl"><i class="fas fa-code small"></i></span> <button aria-label="copy" title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+</pre><td class="rouge-code"><pre><span class="cp">#version 330 core
+</span><span class="k">out</span> <span class="kt">vec4</span> <span class="n">FragColor</span><span class="p">;</span>
+
+<span class="k">in</span> <span class="kt">vec3</span> <span class="n">TexCoords</span><span class="p">;</span>
+
+<span class="k">uniform</span> <span class="kt">samplerCube</span> <span class="n">skybox</span><span class="p">;</span>
+
+<span class="kt">void</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">FragColor</span> <span class="o">=</span> <span class="n">texture</span><span class="p">(</span><span class="n">skybox</span><span class="p">,</span> <span class="n">TexCoords</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></table></code></div></div><ul><li><p>vertex attribute의 위치벡터를 방향벡터로 취하고, 이 것들을 cubemap으로부터 텍스처 값을 샘플링하기 위해 사용한다.</p><li><p>렌더링은 간단히 cubemap 텍스처를 바인딩하면, skybox sampler 는 자동적으로 skybox cubemap으로 채워지게 된다.</p><ul><li>먼저 scene에 skybox를 그리고<li>depth 쓰기를 비활성화할 것이다. (항상 모든 오브젝트들의 뒤에 그려지게됨)</ul></ul><div class="language-cpp highlighter-rouge"><div class="code-header"> <span label-text="Cpp"><i class="fas fa-code small"></i></span> <button aria-label="copy" title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+</pre><td class="rouge-code"><pre><span class="n">glDepthMask</span><span class="p">(</span><span class="n">GL_FALSE</span><span class="p">);</span>
+<span class="n">skyboxShader</span><span class="p">.</span><span class="n">use</span><span class="p">();</span>
+<span class="c1">// ... set view and projection matrix</span>
+<span class="n">glBindVertexArray</span><span class="p">(</span><span class="n">skyboxVAO</span><span class="p">);</span>
+<span class="n">glBindTexture</span><span class="p">(</span><span class="n">GL_TEXTURE_CUBE_MAP</span><span class="p">,</span> <span class="n">cubemapTexture</span><span class="p">);</span>
+<span class="n">glDrawArrays</span><span class="p">(</span><span class="n">GL_TRIANGLES</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">36</span><span class="p">);</span>
+<span class="n">glDepthMask</span><span class="p">(</span><span class="n">GL_TRUE</span><span class="p">);</span>
+<span class="c1">// ... draw rest of the scene</span>
+</pre></table></code></div></div><ul><li><p>플레이어를 중앙으로 둘러싼 skybox를 원하므로, 플레이어의 움직임이 영향을 주지 않도록해야한다.</p><ul><li>현재 view 행렬은 skybox의 모든 위치들을 회전, 확대, 이동 시키므로, 플레이어가 움직이면 cubemap 또한 움직이게 된다.<li>view 행렬의 이동부분을 지워 움직임이 skybox 위치 벡터에 영향을 주지않도록 해야한다.</ul><li><p>4x4 변환 행렬의 좌측 상단 3x3을 취하면, 이동부분을 제거할 수 있다.</p><ul><li>회전변환은 유지됨.</ul></ul><div class="language-glsl highlighter-rouge"><div class="code-header"> <span label-text="Glsl"><i class="fas fa-code small"></i></span> <button aria-label="copy" title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre><td class="rouge-code"><pre><span class="n">glm</span><span class="o">::</span><span class="kt">mat4</span> <span class="n">view</span> <span class="o">=</span> <span class="n">glm</span><span class="o">::</span><span class="kt">mat4</span><span class="p">(</span><span class="n">glm</span><span class="o">::</span><span class="kt">mat3</span><span class="p">(</span><span class="n">camera</span><span class="p">.</span><span class="n">GetViewMatrix</span><span class="p">()));</span>
+</pre></table></code></div></div><ul><li>이제 결과는 다음과 같다.</ul><p><img data-proofer-ignore data-src="https://learnopengl.com/img/advanced/cubemaps_skybox_result.png" alt="" /></p><h3 id="an-optimization"><strong>An optimization</strong><a href="#an-optimization"><i class="fas fa-hashtag"></i></a></h3></h3><ul><li><p>위 예제는, 모든 다른 오브젝트를 그리기 전에 맨 처음에 skybox를 렌더링한다.</p><ul><li>이는 효율적이지 않음.</ul><li><p>fragment shader를 화면의 각 픽셀들마다 실행해야함.</p><ul><li>skybox의 보이는 부분이 작아도 그럼<li>early depth testing 을 사용하여 먼저 폐기해야한다.</ul><li><p>그러므로, 마지막에 렌더링해야한다.</p><ul><li>depth 버퍼는 다른 오브젝트의 dpth로 채워지므로, early depth test를 통과한 skybox의 fragment들만 렌더링하면 된다.<li>이는 fragment shader 호출 횟수를 줄여준다.<li>문제는 skybox는 대부분 렌더링에 실패할 것이라는점.(1x1x1 큐브이므로)<li>만약 dpth testing 없이 렌더링하면 skybox가 다른 오브젝트들을 덮어씀<li>depth buffer에 트릭을 써, skybox가 depth 값을 최댓값인 <code class="language-plaintext highlighter-rouge">1.0</code>을 가지게 만들어서 앞에 드른 오브젝트들이 있는 곳은 test에 실패하도록 해야한다.</ul><li><p>원근 분할(perspective division)이 vertex shader 가 실행된 후에 <code class="language-plaintext highlighter-rouge">gl_Position</code> 의 <code class="language-plaintext highlighter-rouge">xyz</code> 좌표를 <code class="language-plaintext highlighter-rouge">w</code> 요소로 나눔.</p><ul><li>나눗셈 결과 <code class="language-plaintext highlighter-rouge">z</code>요소는 vertex의 depth 값과 동일하다.<li>그러므로, 출력 위치의 <code class="language-plaintext highlighter-rouge">z</code> 요소를 <code class="language-plaintext highlighter-rouge">w</code>와 동일하게 설정하면, z 값을 항상 <code class="language-plaintext highlighter-rouge">1.0</code>으로 만들 수 있다.<li>z = w/w = 1.0</ul></ul><div class="language-glsl highlighter-rouge"><div class="code-header"> <span label-text="Glsl"><i class="fas fa-code small"></i></span> <button aria-label="copy" title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+</pre><td class="rouge-code"><pre><span class="kt">void</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">TexCoords</span> <span class="o">=</span> <span class="n">aPos</span><span class="p">;</span>
+    <span class="kt">vec4</span> <span class="n">pos</span> <span class="o">=</span> <span class="n">projection</span> <span class="o">*</span> <span class="n">view</span> <span class="o">*</span> <span class="kt">vec4</span><span class="p">(</span><span class="n">aPos</span><span class="p">,</span> <span class="mi">1</span><span class="p">.</span><span class="mi">0</span><span class="p">);</span>
+    <span class="nb">gl_Position</span> <span class="o">=</span> <span class="n">pos</span><span class="p">.</span><span class="n">xyww</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></table></code></div></div><ul><li><p>이러면 NDC 좌표에서 z값은 1.0으로 depth. 값의 최댓값을 가지게 된다.</p><ul><li>결과적으로 오브젝트들이 없는 곳에서만 렌더링 된다.</ul><li><p>depth 함수를 기본값인 <code class="language-plaintext highlighter-rouge">GL_LESS</code> 대신에 <code class="language-plaintext highlighter-rouge">GL_LEQUAL</code>로 설정해야한다.</p><ul><li>depth buffer는 skybox에 대해 <code class="language-plaintext highlighter-rouge">1.0</code> 값으로 채워지므로,<li>skybox를 통과하게 만들기 위해</ul></ul><p><a href="https://learnopengl.com/code_viewer_gh.php?code=src/4.advanced_opengl/6.1.cubemaps_skybox/cubemaps_skybox.cpp">전체 소스</a></p><h2 id="environment-mapping"><strong>Environment mapping</strong><a href="#environment-mapping"><i class="fas fa-hashtag"></i></a></h2></h2><ul><li><p>이제 하나의 텍스처에 전체 주변환경이 매핑되었다.</p><li><p>이런 환경을 가진 cubemap을 사용하여, 오브젝트에 빛을 반사 혹은 굴절 시키는 특성을 줄 수 있음.</p><li><p>이렇게 cubemap을 사용하는 기술을 <code class="language-plaintext highlighter-rouge">environment mapping</code> 기술이라고 부름</p><ul><li>가장 많이 사용되는것: <code class="language-plaintext highlighter-rouge">reflection</code>, <code class="language-plaintext highlighter-rouge">refraction</code></ul></ul><h3 id="reflection"><strong>Reflection</strong><a href="#reflection"><i class="fas fa-hashtag"></i></a></h3></h3><ul><li><p>reflection은 오브젝트(혹은 오브젝트의 어느 부분)이 주변환경을 반사하는 특성이다.</p><ul><li>시점의 각도를 기반으로 오브젝트의 컬러들은 환경과 동일하게 설정될 수 있다.<li>ex) 거울을 반사하는 오브젝트 .</ul><li><p><code class="language-plaintext highlighter-rouge">반사벡터(reflection vector)</code>를 계산하는 방법과 cubemap을 샘플링하기 위해 이 벡터를 사용하는 방법은 다음과 같다.</p></ul><p><img data-proofer-ignore data-src="https://learnopengl.com/img/advanced/cubemaps_reflection_theory.png" alt="" /></p><ul><li><p>view 방향 벡터 I 를 기반으로 오브젝트의 법선 벡터 N에 따른 반사 벡터 R을 계산한다.</p><ul><li>GLSL의 <code class="language-plaintext highlighter-rouge">reflect</code> 내장 함수를 사용하여 계산 가능<li>R은 cubemap을 인덱싱, 샘플링 하기 위한 방향 벡터로 사용된다.<li>최종 효과는 오브젝트가 skybox를 반사하는 것처럼 보인다.</ul><li><p>이미 scene에 skybox를 가지고 있기 때문에 reflection을 생성하는 것은 그리 어렵지 않다.</p><li><p>컨테이너에 반사 속성을 주기 위해 컨테이너에 사용된 fragment shader를 수정할 것이다.</p></ul><div class="language-glsl highlighter-rouge"><div class="code-header"> <span label-text="Glsl"><i class="fas fa-code small"></i></span> <button aria-label="copy" title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+</pre><td class="rouge-code"><pre><span class="cp">#version 330 core
+</span><span class="k">out</span> <span class="kt">vec4</span> <span class="n">FragColor</span><span class="p">;</span>
+
+<span class="k">in</span> <span class="kt">vec3</span> <span class="n">Normal</span><span class="p">;</span>
+<span class="k">in</span> <span class="kt">vec3</span> <span class="n">Position</span><span class="p">;</span>
+
+<span class="k">uniform</span> <span class="kt">vec3</span> <span class="n">cameraPos</span><span class="p">;</span>
+<span class="k">uniform</span> <span class="kt">samplerCube</span> <span class="n">skybox</span><span class="p">;</span>
+
+<span class="kt">void</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="kt">vec3</span> <span class="n">I</span> <span class="o">=</span> <span class="n">normalize</span><span class="p">(</span><span class="n">Position</span> <span class="o">-</span> <span class="n">cameraPos</span><span class="p">);</span>
+    <span class="kt">vec3</span> <span class="n">R</span> <span class="o">=</span> <span class="n">reflect</span><span class="p">(</span><span class="n">I</span><span class="p">,</span> <span class="n">normalize</span><span class="p">(</span><span class="n">Normal</span><span class="p">));</span>
+    <span class="n">FragColor</span> <span class="o">=</span> <span class="kt">vec4</span><span class="p">(</span><span class="n">texture</span><span class="p">(</span><span class="n">skybox</span><span class="p">,</span> <span class="n">R</span><span class="p">).</span><span class="n">rgb</span><span class="p">,</span> <span class="mi">1</span><span class="p">.</span><span class="mi">0</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></table></code></div></div><ul><li>I, R을 계산하고, R로 cubemap을 샘플링한다.<li>fragment의 보간된 Normal과 Position 변수를 가지고 있으므로, vertex shader 또한 수정해야한다.</ul><div class="language-glsl highlighter-rouge"><div class="code-header"> <span label-text="Glsl"><i class="fas fa-code small"></i></span> <button aria-label="copy" title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+</pre><td class="rouge-code"><pre><span class="cp">#version 330 core
+</span><span class="k">layout</span> <span class="p">(</span><span class="n">location</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span> <span class="k">in</span> <span class="kt">vec3</span> <span class="n">aPos</span><span class="p">;</span>
+<span class="k">layout</span> <span class="p">(</span><span class="n">location</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span> <span class="k">in</span> <span class="kt">vec3</span> <span class="n">aNormal</span><span class="p">;</span>
+
+<span class="k">out</span> <span class="kt">vec3</span> <span class="n">Normal</span><span class="p">;</span>
+<span class="k">out</span> <span class="kt">vec3</span> <span class="n">Position</span><span class="p">;</span>
+
+<span class="k">uniform</span> <span class="kt">mat4</span> <span class="n">model</span><span class="p">;</span>
+<span class="k">uniform</span> <span class="kt">mat4</span> <span class="n">view</span><span class="p">;</span>
+<span class="k">uniform</span> <span class="kt">mat4</span> <span class="n">projection</span><span class="p">;</span>
+
+<span class="kt">void</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">Normal</span> <span class="o">=</span> <span class="kt">mat3</span><span class="p">(</span><span class="n">transpose</span><span class="p">(</span><span class="n">inverse</span><span class="p">(</span><span class="n">model</span><span class="p">)))</span> <span class="o">*</span> <span class="n">aNormal</span><span class="p">;</span>
+    <span class="n">Position</span> <span class="o">=</span> <span class="kt">vec3</span><span class="p">(</span><span class="n">model</span> <span class="o">*</span> <span class="kt">vec4</span><span class="p">(</span><span class="n">aPos</span><span class="p">,</span> <span class="mi">1</span><span class="p">.</span><span class="mi">0</span><span class="p">));</span>
+    <span class="nb">gl_Position</span> <span class="o">=</span> <span class="n">projection</span> <span class="o">*</span> <span class="n">view</span> <span class="o">*</span> <span class="kt">vec4</span><span class="p">(</span><span class="n">Position</span><span class="p">,</span> <span class="mi">1</span><span class="p">.</span><span class="mi">0</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></table></code></div></div><ul><li>법선 벡터를 법선 행렬로 변환<li><p><code class="language-plaintext highlighter-rouge">Position</code>: world-space 위치 벡터, fragment 에서 view 방향 벡터를 계산하기 위해</p><li><p>법선을 <a href="https://learnopengl.com/code_viewer.php?code=lighting/basic_lighting_vertex_data">vertex data</a>에 추가하고 attribute pointer에도 수정해야한다. 또한 cameraPos 또한 넘겨줘야한다.</p><li>큐브맵을 렌더링하기전에 cubemap 텍스처도 바인딩해야한다.</ul><div class="language-cpp highlighter-rouge"><div class="code-header"> <span label-text="Cpp"><i class="fas fa-code small"></i></span> <button aria-label="copy" title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+</pre><td class="rouge-code"><pre><span class="n">glBindVertexArray</span><span class="p">(</span><span class="n">cubeVAO</span><span class="p">);</span>
+<span class="n">glBindTexture</span><span class="p">(</span><span class="n">GL_TEXTURE_CUBE_MAP</span><span class="p">,</span> <span class="n">skyboxTexture</span><span class="p">);</span>
+<span class="n">glDrawArrays</span><span class="p">(</span><span class="n">GL_TRIANGLES</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">36</span><span class="p">);</span>
+</pre></table></code></div></div><ul><li><p>코드를 실행하면, 거울같은 컨테이너를 볼 수 있다.</p><ul><li>둘러싼 skybox는 정확히 컨테이너에 반사되고 있다.</ul><p><img data-proofer-ignore data-src="https://learnopengl.com/img/advanced/cubemaps_reflection.png" alt="" /></p></ul><p><a href="https://learnopengl.com/code_viewer_gh.php?code=src/4.advanced_opengl/6.2.cubemaps_environment_mapping/cubemaps_environment_mapping.cpp">전체 소스</a></p><ul><li>반사가 전체 오브젝트에 적용될 때, 이 오브젝트는 스틸이나 크롬같은 높은 반사율을 가진 material 오브젝트처럼 보인다.</ul><p><img data-proofer-ignore data-src="https://learnopengl.com/img/advanced/cubemaps_reflection_nanosuit.png" alt="" /></p><ul><li>하지만 실제 대부분의 모델들은 완전한 반사를하지 않는다.<ul><li><code class="language-plaintext highlighter-rouge">reflection maps</code>: diffuse, specular map 들 처럼, 이 map은 fragment의 반사율을 결정하기 위해 샘플링할 수 있는 텍스처 이미지<ul><li>이를 이용하여 모델의 어느 부분이 어떠한 세기를 가진 반사율을 보여줄지 결정할 수 있다.</ul></ul></ul><h3 id="refraction"><strong>Refraction</strong><a href="#refraction"><i class="fas fa-hashtag"></i></a></h3></h3><ul><li><p>환경 매핑의 또다른 형태는 refraction(굴절)이라고 불리고 반사와 비슷하다.</p><ul><li>굴절은 material의 변화에 따라 빛의 방향이 달라지는 것을 말한다.<li>굴절은 흔히 빛이 직선으로 통과하지 않고 휘어지는 물과 같은 표면에서 볼 수 있다.</ul><li><p>굴절: <a href="https://en.wikipedia.org/wiki/Snell%27s_law">snell’s law</a></p></ul><p><img data-proofer-ignore data-src="https://learnopengl.com/img/advanced/cubemaps_refraction_theory.png" alt="" /></p><ul><li><p>view 벡터 I, 법선 벡터 N, 굴절벡터 R이 있다.</p><ul><li>view 벡터의 방향이 휘어진게 R로 Cubemap을 샘플링한다.</ul><li><p>굴절은 GLSL의 <code class="language-plaintext highlighter-rouge">refract</code> 함수를 통해 쉽게 구현될 수 있다.</p><ul><li>이 함수는 법선 벡터와 view 방향, 그리고 refractive indices 사이의 비율을 인자로 받는다.</ul><li><p>굴절 index는 material의 빛이 왜곡/ 휘어지는 정도를 결정한다.</p><ul><li>각 material들은 자신만의 고유한 <code class="language-plaintext highlighter-rouge">refactive index</code>를 가진다.<li>가장 많이 쓰이는 index는 아래 표에서 볼 수 있다.</ul></ul><div class="table-wrapper"><table><thead><tr><th>Material<th>Refractive index<tbody><tr><td>Air<td>1.00<tr><td>Water<td>1.33<tr><td>Ice<td>1.309<tr><td>Glass<td>1.52<tr><td>Diamond<td>2.42</table></div><ul><li><p>빛이 통과하는 두 material 사이의 비율을 계산하기 위해 이 index를 사용한다.</p><ul><li>현재 예제의 경우 공기 =&gt; 유리 라고 가정함 즉, 비율은 1.0/1.52 = 0.658</ul><li><p>fragment를 다음과 같이 수정해보자</p></ul><div class="language-glsl highlighter-rouge"><div class="code-header"> <span label-text="Glsl"><i class="fas fa-code small"></i></span> <button aria-label="copy" title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+</pre><td class="rouge-code"><pre>
+<span class="kt">void</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="kt">float</span> <span class="n">ratio</span> <span class="o">=</span> <span class="mi">1</span><span class="p">.</span><span class="mo">00</span> <span class="o">/</span> <span class="mi">1</span><span class="p">.</span><span class="mi">52</span><span class="p">;</span>
+    <span class="kt">vec3</span> <span class="n">I</span> <span class="o">=</span> <span class="n">normalize</span><span class="p">(</span><span class="n">Position</span> <span class="o">-</span> <span class="n">cameraPos</span><span class="p">);</span>
+    <span class="kt">vec3</span> <span class="n">R</span> <span class="o">=</span> <span class="n">refract</span><span class="p">(</span><span class="n">I</span><span class="p">,</span> <span class="n">normalize</span><span class="p">(</span><span class="n">Normal</span><span class="p">),</span> <span class="n">ratio</span><span class="p">);</span>
+    <span class="n">FragColor</span> <span class="o">=</span> <span class="kt">vec4</span><span class="p">(</span><span class="n">texture</span><span class="p">(</span><span class="n">skybox</span><span class="p">,</span> <span class="n">R</span><span class="p">).</span><span class="n">rgb</span><span class="p">,</span> <span class="mi">1</span><span class="p">.</span><span class="mi">0</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></table></code></div></div><ul><li>이 refractive index들을 바꾸면 다른 비주얼 결과를 만들 수 있다.</ul><p><img data-proofer-ignore data-src="https://learnopengl.com/img/advanced/cubemaps_refraction.png" alt="" /></p><ul><li>빛, 반사, 굴절, vertex 움직임의 올바른 결합을 통해 물 그래픽을 만들 수 있다.<ul><li>물리적인 계산 결과를 위해, 물체를 떠날 때 빛을 다시 굴절시켜주어야한다.<li>지금은 간단히 한쪽 면만 굴절시킨다.</ul></ul><h3 id="dynamic-environment-maps"><strong>Dynamic environment maps</strong><a href="#dynamic-environment-maps"><i class="fas fa-hashtag"></i></a></h3></h3><ul><li>지금은 skybox를 정적인 이미지의 결합으로 사용함.<ul><li>즉, 움직이는 오브젝트를 반사/굴절 시키지않음<li>위 예제는 여러 오브젝트가 있어도 skybox만 비침</ul><li><p>Framebuffer를 사용하면 6개의 다른 각도로 찍어 scene 텍스처 생성 가능</p><ul><li>이는 비용이 비싸다. =&gt; 성능적으로 큰 패널티<li>이를 <code class="language-plaintext highlighter-rouge">동적 환경 매핑(dynamic environment mapping)</code>이라함<li>주변환경을 cubemap으로 동적으로 생성, 이를 환경에 매핑</ul><li>보통의 응용프로그램은 가능한 skybox를 사용하고, 가능한 경우 동적 환경 맵을 생성하기 위해 가능한 한 큐브맵을 미리 렌더링하려고 한다.<ul><li>동적 환경 매핑을 성능저하 없이 실제 렌더링 응용 프로그램에서 작동하도록하려면, 많은 트릭이 필요</ul></ul><h2 id="출처"><strong>출처</strong><a href="#출처"><i class="fas fa-hashtag"></i></a></h2></h2><p><a href="https://learnopengl.com/Advanced-OpenGL/Cubemaps">Cubemaps: 원문</a></p><p><a href="https://heinleinsgame.tistory.com/29?category=757483">Cubemaps: 번역본</a></p></div><div class="post-tail-wrapper text-muted"><div class="post-meta mb-3"> <i class="far fa-folder-open fa-fw mr-1"></i> <a href='/categories/graphics/'>graphics</a>, <a href='/categories/graphics-opengl/'>graphics-opengl</a></div><div class="post-tags"> <i class="fa fa-tags fa-fw mr-1"></i> <a href="/tags/opengl/" class="post-tag no-text-decoration" >opengl</a></div><div class="post-tail-bottom d-flex justify-content-between align-items-center mt-3 pt-5 pb-2"><div class="license-wrapper"> This post is licensed under <a href="https://creativecommons.org/licenses/by/4.0/"> CC BY 4.0 </a> by the author.</div><div class="share-wrapper"> <span class="share-label text-muted mr-1">Share</span> <span class="share-icons"> <a href="https://twitter.com/intent/tweet?text=[learn-opengl] Advanced OpenGL: Cubemaps - RohRoh&url=https://nor-s.github.io/posts/2022/03/18/09/28/opengl23/" data-toggle="tooltip" data-placement="top" title="Twitter" target="_blank" rel="noopener" aria-label="Twitter"> <i class="fa-fw fab fa-twitter"></i> </a> <a href="https://www.facebook.com/sharer/sharer.php?title=[learn-opengl] Advanced OpenGL: Cubemaps - RohRoh&u=https://nor-s.github.io/posts/2022/03/18/09/28/opengl23/" data-toggle="tooltip" data-placement="top" title="Facebook" target="_blank" rel="noopener" aria-label="Facebook"> <i class="fa-fw fab fa-facebook-square"></i> </a> <a href="https://telegram.me/share?text=[learn-opengl] Advanced OpenGL: Cubemaps - RohRoh&url=https://nor-s.github.io/posts/2022/03/18/09/28/opengl23/" data-toggle="tooltip" data-placement="top" title="Telegram" target="_blank" rel="noopener" aria-label="Telegram"> <i class="fa-fw fab fa-telegram"></i> </a> <i id="copy-link" class="fa-fw fas fa-link small" data-toggle="tooltip" data-placement="top" title="Copy link" title-succeed="Link copied successfully!"> </i> </span></div></div></div></div></div><div id="panel-wrapper" class="col-xl-3 pl-2 text-muted topbar-down"><div class="access"><div id="access-lastmod" class="post"><div class="panel-heading">Recent Update</div><ul class="post-content pl-0 pb-1 ml-1 mt-2"><li><a href="/posts/2022/03/24/03/46/skeleton1/">[opengl] OGLDEV: Skeleton Animation In OpenGL using Assimp 1</a><li><a href="/posts/2022/03/23/21/58/unreal-animation/">[UE4] 애니메이션 시작하기</a><li><a href="/posts/2022/03/22/04/45/bellman-ford/">[그래프] 벨만-포드 최단 경로 알고리즘</a><li><a href="/posts/2022/03/18/08/26/opengl22/">[learn-opengl] Advanced OpenGL: Framebuffers</a><li><a href="/posts/2022/03/18/09/28/opengl23/">[learn-opengl] Advanced OpenGL: Cubemaps</a></ul></div><div id="access-tags"><div class="panel-heading">Tags</div><div class="d-flex flex-wrap mt-3 mb-1 mr-3"> <a class="post-tag" href="/tags/opengl/">opengl</a> <a class="post-tag" href="/tags/ps/">ps</a> <a class="post-tag" href="/tags/unreal4/">unreal4</a> <a class="post-tag" href="/tags/regex/">regex</a> <a class="post-tag" href="/tags/vscode/">vscode</a> <a class="post-tag" href="/tags/algorithm/">algorithm</a> <a class="post-tag" href="/tags/box2d/">box2d</a> <a class="post-tag" href="/tags/csapp/">csapp</a> <a class="post-tag" href="/tags/note/">note</a> <a class="post-tag" href="/tags/shader/">shader</a></div></div></div><script src="https://cdn.jsdelivr.net/gh/afeld/bootstrap-toc@1.0.1/dist/bootstrap-toc.min.js"></script><div id="toc-wrapper" class="pl-0 pr-4 mb-5"><div class="panel-heading pl-3 pt-2 mb-2">Contents</div><nav id="toc" data-toggle="toc"></nav></div></div></div><div class="row"><div class="col-12 col-lg-11 col-xl-8"><div id="tail-wrapper" class="pl-1 pr-1 pl-sm-2 pr-sm-2 pl-md-4 pr-md-4"><div id="related-posts" class="mt-5 mb-2 mb-sm-4"><h3 class="pt-2 mt-1 mb-4 ml-1" data-toc-skip>Further Reading</h3><div class="card-deck mb-4"><div class="card"> <a href="/posts/2022/03/18/08/26/opengl22/"><div class="card-body"> <em class="timeago small" date="2022-03-18 08:26:47 +0900" >Mar 18</em><h3 class="pt-0 mt-1 mb-3" data-toc-skip>[learn-opengl] Advanced OpenGL: Framebuffers</h3><div class="text-muted small"><p> Framebuffers 지금까지 여러 스크린 버퍼들을 사용해왔다. color buffer: 컬러 값 작성 depth buffer: 깊이 정보 작성 stencil buffer: 특정 조건에 의해 해당 fragment를 폐기함. 이러한 버퍼들을 결합한 것을 Framebuffer라고...</p></div></div></a></div><div class="card"> <a href="/posts/2022/03/20/01/05/opengl24/"><div class="card-body"> <em class="timeago small" date="2022-03-20 01:05:12 +0900" >Mar 20</em><h3 class="pt-0 mt-1 mb-3" data-toc-skip>[learn-opengl] Advanced OpenGL: Advanced Data</h3><div class="text-muted small"><p> Advanced Data 버퍼들을 좀 더 흥미로운 방법과 texture들을 통해 shader에 많은 양의 data를 전달하는 흥미로운 방법이 존재한다. 이런 버퍼함수들과, 많은 양의 데이터를 저장하기 위해 텍스처 객체를 사용하는 방법을 다룰 것이다. OpenGL에서의 buffer는 특정 메모리를 관리...</p></div></div></a></div><div class="card"> <a href="/posts/2022/02/12/14/20/learn_opengl1/"><div class="card-body"> <em class="timeago small" date="2022-02-12 14:20:38 +0900" >Feb 12</em><h3 class="pt-0 mt-1 mb-3" data-toc-skip>[learn-opengl] Introduction: OpenGL</h3><div class="text-muted small"><p> 1. OpenGL immediate mode (fixed function pipeline) 예전에 쓰였던 방식 대부분 기능이 내부에 숨겨져있음, 내부에서 작동확인 어려움 그대신 사용하기 쉽고 이해하기 쉬움 그러나 비효율적 OpenGL 3.2 이후 core-prof...</p></div></div></a></div></div></div><div class="post-navigation d-flex justify-content-between"> <a href="/posts/2022/03/18/08/26/opengl22/" class="btn btn-outline-primary" prompt="Older"><p>[learn-opengl] Advanced OpenGL: Framebuffers</p></a> <a href="/posts/2022/03/20/01/05/opengl24/" class="btn btn-outline-primary" prompt="Newer"><p>[learn-opengl] Advanced OpenGL: Advanced Data</p></a></div></div></div></div><footer class="d-flex w-100 justify-content-center"><div class="d-flex justify-content-between align-items-center text-muted"><div class="footer-left"><p class="mb-0"> © 2022 <a href="https://github.com/Nor-s">roh</a>. <span data-toggle="tooltip" data-placement="top" title="Except where otherwise noted, the blog posts on this site are licensed under the Creative Commons Attribution 4.0 International (CC BY 4.0) License by the author.">Some rights reserved.</span></p></div><div class="footer-right"><p class="mb-0"> Powered by <a href="https://jekyllrb.com" target="_blank" rel="noopener">Jekyll</a> with <a href="https://github.com/cotes2020/jekyll-theme-chirpy" target="_blank" rel="noopener">Chirpy</a> theme.</p></div></div></footer></div><div id="search-result-wrapper" class="d-flex justify-content-center unloaded"><div class="col-12 col-sm-11 post-content"><div id="search-hints"><div id="access-tags"><div class="panel-heading">Tags</div><div class="d-flex flex-wrap mt-3 mb-1 mr-3"> <a class="post-tag" href="/tags/opengl/">opengl</a> <a class="post-tag" href="/tags/ps/">ps</a> <a class="post-tag" href="/tags/unreal4/">unreal4</a> <a class="post-tag" href="/tags/regex/">regex</a> <a class="post-tag" href="/tags/vscode/">vscode</a> <a class="post-tag" href="/tags/algorithm/">algorithm</a> <a class="post-tag" href="/tags/box2d/">box2d</a> <a class="post-tag" href="/tags/csapp/">csapp</a> <a class="post-tag" href="/tags/note/">note</a> <a class="post-tag" href="/tags/shader/">shader</a></div></div></div><div id="search-results" class="d-flex flex-wrap justify-content-center text-muted mt-3"></div></div></div></div><div id="mask"></div><a id="back-to-top" href="#" aria-label="back-to-top" class="btn btn-lg btn-box-shadow" role="button"> <i class="fas fa-angle-up"></i> </a> <script src="https://cdn.jsdelivr.net/npm/simple-jekyll-search@1.10.0/dest/simple-jekyll-search.min.js"></script> <script> SimpleJekyllSearch({ searchInput: document.getElementById('search-input'), resultsContainer: document.getElementById('search-results'), json: '/assets/js/data/search.json', searchResultTemplate: '<div class="pl-1 pr-1 pl-sm-2 pr-sm-2 pl-lg-4 pr-lg-4 pl-xl-0 pr-xl-0"> <a href="{url}">{title}</a><div class="post-meta d-flex flex-column flex-sm-row text-muted mt-1 mb-1"> {categories} {tags}</div><p>{snippet}</p></div>', noResultsText: '<p class="mt-5">Oops! No result founds.</p>', templateMiddleware: function(prop, value, template) { if (prop === 'categories') { if (value === '') { return `${value}`; } else { return `<div class="mr-sm-4"><i class="far fa-folder fa-fw"></i>${value}</div>`; } } if (prop === 'tags') { if (value === '') { return `${value}`; } else { return `<div><i class="fa fa-tag fa-fw"></i>${value}</div>`; } } } }); </script> <script src="https://cdn.jsdelivr.net/combine/npm/lozad/dist/lozad.min.js,npm/magnific-popup@1/dist/jquery.magnific-popup.min.js,npm/clipboard@2/dist/clipboard.min.js"></script> <script defer src="/assets/js/dist/post.min.js"></script> <script src="https://cdn.jsdelivr.net/combine/npm/popper.js@1.16.1,npm/bootstrap@4/dist/js/bootstrap.min.js"></script> <script defer src="/app.js"></script> <script defer src="https://www.googletagmanager.com/gtag/js?id="></script> <script> document.addEventListener("DOMContentLoaded", function(event) { window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);} gtag('js', new Date()); gtag('config', ''); }); </script>

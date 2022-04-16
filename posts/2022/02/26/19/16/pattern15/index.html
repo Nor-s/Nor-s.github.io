@@ -1,0 +1,297 @@
+<!DOCTYPE html><html lang="ko-KR" ><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><meta name="day-prompt" content="days ago"><meta name="hour-prompt" content="hours ago"><meta name="minute-prompt" content="minutes ago"><meta name="justnow-prompt" content="just now"><meta name="generator" content="Jekyll v4.2.1" /><meta property="og:title" content="[게임 프로그래밍 패턴] Decoupling Patterns: Event Queue" /><meta property="og:locale" content="ko_KR" /><meta name="description" content="Event Queue" /><meta property="og:description" content="Event Queue" /><link rel="canonical" href="https://nor-s.github.io/posts/2022/02/26/19/16/pattern15/" /><meta property="og:url" content="https://nor-s.github.io/posts/2022/02/26/19/16/pattern15/" /><meta property="og:site_name" content="RohRoh" /><meta property="og:type" content="article" /><meta property="article:published_time" content="2022-02-26T19:16:29+09:00" /><meta name="twitter:card" content="summary" /><meta property="twitter:title" content="[게임 프로그래밍 패턴] Decoupling Patterns: Event Queue" /><meta name="twitter:site" content="@twitter_username" /><meta name="google-site-verification" content="google_meta_tag_verification" /> <script type="application/ld+json"> {"dateModified":"2022-02-26T17:11:18+09:00","datePublished":"2022-02-26T19:16:29+09:00","description":"Event Queue","mainEntityOfPage":{"@type":"WebPage","@id":"https://nor-s.github.io/posts/2022/02/26/19/16/pattern15/"},"url":"https://nor-s.github.io/posts/2022/02/26/19/16/pattern15/","@type":"BlogPosting","headline":"[게임 프로그래밍 패턴] Decoupling Patterns: Event Queue","@context":"https://schema.org"}</script><title>[게임 프로그래밍 패턴] Decoupling Patterns: Event Queue | RohRoh</title><link rel="apple-touch-icon" sizes="180x180" href="/assets/img/favicons/apple-touch-icon.png"><link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicons/favicon-32x32.png"><link rel="icon" type="image/png" sizes="16x16" href="/assets/img/favicons/favicon-16x16.png"><link rel="manifest" href="/assets/img/favicons/site.webmanifest"><link rel="shortcut icon" href="/assets/img/favicons/favicon.ico"><meta name="apple-mobile-web-app-title" content="RohRoh"><meta name="application-name" content="RohRoh"><meta name="msapplication-TileColor" content="#da532c"><meta name="msapplication-config" content="/assets/img/favicons/browserconfig.xml"><meta name="theme-color" content="#ffffff"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous"><link rel="dns-prefetch" href="https://fonts.gstatic.com"><link rel="preconnect" href="https://www.google-analytics.com" crossorigin="use-credentials"><link rel="dns-prefetch" href="https://www.google-analytics.com"><link rel="preconnect" href="https://www.googletagmanager.com" crossorigin="anonymous"><link rel="dns-prefetch" href="https://www.googletagmanager.com"><link rel="preconnect" href="https://cdn.jsdelivr.net"><link rel="dns-prefetch" href="https://cdn.jsdelivr.net"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.11.2/css/all.min.css"><link rel="stylesheet" href="/assets/css/style.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/afeld/bootstrap-toc@1.0.1/dist/bootstrap-toc.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/magnific-popup@1.1.0/dist/magnific-popup.min.css"> <script src="https://cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script> <script type="text/javascript"> class ModeToggle { static get MODE_KEY() { return "mode"; } static get DARK_MODE() { return "dark"; } static get LIGHT_MODE() { return "light"; } static get ID() { return "mode-toggle"; } constructor() { if (this.hasMode) { if (this.isDarkMode) { if (!this.isSysDarkPrefer) { this.setDark(); } } else { if (this.isSysDarkPrefer) { this.setLight(); } } } let self = this; /* always follow the system prefers */ this.sysDarkPrefers.addEventListener("change", () => { if (self.hasMode) { if (self.isDarkMode) { if (!self.isSysDarkPrefer) { self.setDark(); } } else { if (self.isSysDarkPrefer) { self.setLight(); } } self.clearMode(); } self.notify(); }); } /* constructor() */ get sysDarkPrefers() { return window.matchMedia("(prefers-color-scheme: dark)"); } get isSysDarkPrefer() { return this.sysDarkPrefers.matches; } get isDarkMode() { return this.mode === ModeToggle.DARK_MODE; } get isLightMode() { return this.mode === ModeToggle.LIGHT_MODE; } get hasMode() { return this.mode != null; } get mode() { return sessionStorage.getItem(ModeToggle.MODE_KEY); } /* get the current mode on screen */ get modeStatus() { if (this.isDarkMode || (!this.hasMode && this.isSysDarkPrefer)) { return ModeToggle.DARK_MODE; } else { return ModeToggle.LIGHT_MODE; } } setDark() { $('html').attr(ModeToggle.MODE_KEY, ModeToggle.DARK_MODE); sessionStorage.setItem(ModeToggle.MODE_KEY, ModeToggle.DARK_MODE); } setLight() { $('html').attr(ModeToggle.MODE_KEY, ModeToggle.LIGHT_MODE); sessionStorage.setItem(ModeToggle.MODE_KEY, ModeToggle.LIGHT_MODE); } clearMode() { $('html').removeAttr(ModeToggle.MODE_KEY); sessionStorage.removeItem(ModeToggle.MODE_KEY); } /* Notify another plugins that the theme mode has changed */ notify() { window.postMessage({ direction: ModeToggle.ID, message: this.modeStatus }, "*"); } } /* ModeToggle */ const toggle = new ModeToggle(); function flipMode() { if (toggle.hasMode) { if (toggle.isSysDarkPrefer) { if (toggle.isLightMode) { toggle.clearMode(); } else { toggle.setLight(); } } else { if (toggle.isDarkMode) { toggle.clearMode(); } else { toggle.setDark(); } } } else { if (toggle.isSysDarkPrefer) { toggle.setLight(); } else { toggle.setDark(); } } toggle.notify(); } /* flipMode() */ </script><body data-spy="scroll" data-target="#toc"><div id="sidebar" class="d-flex flex-column align-items-end" lang="en"><div class="profile-wrapper text-center"><div id="avatar"> <a href="/" alt="avatar" class="mx-auto"> <img src="/commons/avatar.png" alt="avatar" onerror="this.style.display='none'"> </a></div><div class="site-title mt-3"> <a href="/">RohRoh</a></div><div class="site-subtitle font-italic">my blog</div></div><ul class="w-100"><li class="nav-item"> <a href="/" class="nav-link"> <i class="fa-fw fas fa-home ml-xl-3 mr-xl-3 unloaded"></i> <span>HOME</span> </a><li class="nav-item"> <a href="/categories/" class="nav-link"> <i class="fa-fw fas fa-stream ml-xl-3 mr-xl-3 unloaded"></i> <span>CATEGORIES</span> </a><li class="nav-item"> <a href="/tags/" class="nav-link"> <i class="fa-fw fas fa-tag ml-xl-3 mr-xl-3 unloaded"></i> <span>TAGS</span> </a><li class="nav-item"> <a href="/archives/" class="nav-link"> <i class="fa-fw fas fa-archive ml-xl-3 mr-xl-3 unloaded"></i> <span>ARCHIVES</span> </a><li class="nav-item"> <a href="/about/" class="nav-link"> <i class="fa-fw fas fa-info-circle ml-xl-3 mr-xl-3 unloaded"></i> <span>ABOUT</span> </a></ul><div class="sidebar-bottom mt-auto d-flex flex-wrap justify-content-center align-items-center"> <button class="mode-toggle btn" aria-label="Switch Mode"> <i class="fas fa-adjust"></i> </button> <span class="icon-border"></span> <a href="https://github.com/Nor-s" aria-label="github" target="_blank" rel="noopener"> <i class="fab fa-github"></i> </a> <a href="/feed.xml" aria-label="rss" > <i class="fas fa-rss"></i> </a></div></div><div id="topbar-wrapper" class="row justify-content-center topbar-down"><div id="topbar" class="col-11 d-flex h-100 align-items-center justify-content-between"> <span id="breadcrumb"> <span> <a href="/"> Home </a> </span> <span>[게임 프로그래밍 패턴] Decoupling Patterns: Event Queue</span> </span> <i id="sidebar-trigger" class="fas fa-bars fa-fw"></i><div id="topbar-title"> Post</div><i id="search-trigger" class="fas fa-search fa-fw"></i> <span id="search-wrapper" class="align-items-center"> <i class="fas fa-search fa-fw"></i> <input class="form-control" id="search-input" type="search" aria-label="search" autocomplete="off" placeholder="Search..."> <i class="fa fa-times-circle fa-fw" id="search-cleaner"></i> </span> <span id="search-cancel" >Cancel</span></div></div><div id="main-wrapper"><div id="main"><div class="row"><div id="core-wrapper" class="col-12 col-lg-11 col-xl-8"><div class="post pl-1 pr-1 pl-sm-2 pr-sm-2 pl-md-4 pr-md-4"><h1 data-toc-skip>[게임 프로그래밍 패턴] Decoupling Patterns: Event Queue</h1><div class="post-meta text-muted"><div> <em> <a href="https://github.com/Nor-s">roh</a> </em></div><div class="d-flex"><div> <span> <em class="timeago" date="2022-02-26 19:16:29 +0900" data-toggle="tooltip" data-placement="bottom" title="Sat, Feb 26, 2022, 7:16 PM +0900" >Feb 26</em> </span> <span> Updated <em class="timeago" date="2022-02-26 17:11:18 +0900 " data-toggle="tooltip" data-placement="bottom" title="Sat, Feb 26, 2022, 5:11 PM +0900" >Feb 26</em> </span> <span class="readtime" data-toggle="tooltip" data-placement="bottom" title="5923 words"> <em>32 min</em> read</span></div></div></div><div class="post-content"><h1 id="event-queue"><strong>Event Queue</strong></h1><hr /><ul><li>메시자나 이벤트를 보내는 시점과 처리하는 시점을 디커플링한다.</ul><h2 id="동기"><strong>동기</strong><a href="#동기"><i class="fas fa-hashtag"></i></a></h2></h2><hr /><ul><li>메시지 큐, 이벤트 루프, 메시지 펌프 등등..</ul><details><summary><font color="red">GUI 이벤트 루프</font></summary><div><ul><li><p>UI 프로그래밍</p><li>버튼 클릭, 메뉴 선택, 키보드 입력 등등..<li>상호작용 =&gt; 운영체제는 이벤트를 만들어 프로그램으로 전달.<li><p>프로그램 =&gt; 이벤트 핸들러 코드에 전달</p><blockquote><p>이벤트 주도 프로그래밍(event-driven programming)</p></blockquote><li>이벤트받기 위해서는 이벤트 루프가 있어야함</ul><div class="language-cpp highlighter-rouge"><div class="code-header"> <span label-text="Cpp"><i class="fas fa-code small"></i></span> <button aria-label="copy" title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+</pre><td class="rouge-code"><pre><span class="k">while</span> <span class="p">(</span><span class="n">running</span><span class="p">)</span>
+<span class="p">{</span>
+  <span class="n">Event</span> <span class="n">event</span> <span class="o">=</span> <span class="n">getNextEvent</span><span class="p">();</span>
+  <span class="c1">// Handle event...</span>
+<span class="p">}</span>
+</pre></table></code></div></div><ul><li>프로그램이 원할 때 이벤트를 가져온다.<ul><li>즉, OS가 디바이스 드라이버로부터 입력값을 받은 후, 그 값을 어딘가에 저장해 둔다는 뜻.<li>그 장소는 <code class="language-plaintext highlighter-rouge">큐(queue)</code></ul></ul><p><img data-proofer-ignore data-src="https://gameprogrammingpatterns.com/images/event-queue-loop.png" alt="" /></p><ul><li>사용자 입력 =&gt; OS는 아직 처리 안된 이벤트 큐에 추가한다.</ul></div></details> <details><summary><font color="red">중앙 이벤트 버스</font></summary><div><ul><li>이벤트 주도 방식으로 구현된 게임은 거의 없음(게임 루프 사용)<li>게임에서 자체 이벤트 큐를 만들어 통신 시스템으로 활용하는 경우는 흔함.<li>“central”, “global”, or “main” 같은 형용사가 흔히 붙음.<ul><li>게임 시스템들이 디커플링 상태를 유지한 채, 서로 고수준 통신을 하고 싶을 경우 이를 사용한다.</ul><li>예시)특정 인-게임 이벤트가 발생할 때, 말풍선을 보여주는 튜토리얼 시스템<ul><li>‘적이 죽었음’이라는 이벤트를 받으면, 알려달라고 큐에 자기 자신을 등록한다.<li>전투, 튜토리얼 시스템이 서로 몰라도, 사실을 전달 가능. <img data-proofer-ignore data-src="https://gameprogrammingpatterns.com/images/event-queue-central.png" alt="" /></ul><li>이벤트 큐가 언제나 게임 전체 통신 시스템으로만 사용되어야하는 건 아님. - 클래스 하나, 분야(domain) 하나에서도 유용함.<blockquote><p>개체가 정보를 보내고 통지를 받을 수 있는 공용공간 == AI 분야의 흑판(blackboard) 시스템과 비슷하다.</p></blockquote></ul></div></details> <details><summary><font color="red">Say What?(문제있는 단순한 사운드 시스템)</font></summary><div><ul><li>사운드 시스템을 추가하기 위해 아이디와 볼륨을 받아 사운드를 출력하는 API를 제공하는 오디오 엔진 부터 만들어 보자</ul><blockquote><p>시스템 하드웨어에 보통 오디오 출력은 하나이므로, 싱글턴 패턴이 유용할 수 있다.</p></blockquote><div class="language-cpp highlighter-rouge"><div class="code-header"> <span label-text="Cpp"><i class="fas fa-code small"></i></span> <button aria-label="copy" title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+</pre><td class="rouge-code"><pre><span class="k">class</span> <span class="nc">Audio</span>
+<span class="p">{</span>
+<span class="nl">public:</span>
+  <span class="k">static</span> <span class="kt">void</span> <span class="n">playSound</span><span class="p">(</span><span class="n">SoundId</span> <span class="n">id</span><span class="p">,</span> <span class="kt">int</span> <span class="n">volume</span><span class="p">);</span>
+<span class="p">};</span>
+</pre></table></code></div></div><ul><li>오디오 엔진<ul><li>적당한 사운드 리소스 로딩, 출력할 수 있는 채널을 찾아 틀어줌.</ul><li>playSound는 다음과 같다.</ul><div class="language-cpp highlighter-rouge"><div class="code-header"> <span label-text="Cpp"><i class="fas fa-code small"></i></span> <button aria-label="copy" title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+</pre><td class="rouge-code"><pre><span class="kt">void</span> <span class="n">Audio</span><span class="o">::</span><span class="n">playSound</span><span class="p">(</span><span class="n">SoundId</span> <span class="n">id</span><span class="p">,</span> <span class="kt">int</span> <span class="n">volume</span><span class="p">)</span>
+<span class="p">{</span>
+  <span class="n">ResourceId</span> <span class="n">resource</span> <span class="o">=</span> <span class="n">loadSound</span><span class="p">(</span><span class="n">id</span><span class="p">);</span>
+  <span class="kt">int</span> <span class="n">channel</span> <span class="o">=</span> <span class="n">findOpenChannel</span><span class="p">();</span>
+  <span class="k">if</span> <span class="p">(</span><span class="n">channel</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="k">return</span><span class="p">;</span>
+  <span class="n">startSound</span><span class="p">(</span><span class="n">resource</span><span class="p">,</span> <span class="n">channel</span><span class="p">,</span> <span class="n">volume</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></table></code></div></div><ul><li><p>위 코드를 소스 관리 툴에 체크인하고 사운드 파일을 만들고 나면 코드 아무곳에서 playSound을 호출할 수 있다.</p><li><p>아래는 UI코드에서 선택한 메뉴가 바뀔 때 소리를 내는 코드이다.</p></ul><div class="language-cpp highlighter-rouge"><div class="code-header"> <span label-text="Cpp"><i class="fas fa-code small"></i></span> <button aria-label="copy" title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+</pre><td class="rouge-code"><pre><span class="k">class</span> <span class="nc">Menu</span>
+<span class="p">{</span>
+<span class="nl">public:</span>
+  <span class="kt">void</span> <span class="n">onSelect</span><span class="p">(</span><span class="kt">int</span> <span class="n">index</span><span class="p">)</span>
+  <span class="p">{</span>
+    <span class="n">Audio</span><span class="o">::</span><span class="n">playSound</span><span class="p">(</span><span class="n">SOUND_BLOOP</span><span class="p">,</span> <span class="n">VOL_MAX</span><span class="p">);</span>
+    <span class="c1">// Other stuff...</span>
+  <span class="p">}</span>
+<span class="p">};</span>
+</pre></table></code></div></div><ul><li><p>이 상태에서 메뉴를 옮겨다니다 보면, 화면이 멈출 가능성이 있다.</p><li> <font color="red">**문제1:**</font><p>API는 오디오 엔진이 요청을 완전히 처리할 때까지 호출자를 블록(block)한다.</p><ul><li>동기적(ssynchronous)인 함수로, 소리가 나기 전까지 API는 블록됨.<li>공격을 하면, 몹 두마리가 한 프레임에 같이 맞을 수 있음.<ul><li>같은 소리 파형 두 개를 동시에 출력하면 하나의 소리를 두 배 크기로 출력하는것과 같아 좋지 않음.</ul><li><strong>전체 사운드 호출을 취합하고, 우선순위에 따라 나열해서 해결 가능</strong><li>하지만 <code class="language-plaintext highlighter-rouge">playsound</code>는 하나씩 처리하기 때문에 사운드 요청을 한 번에 하나밖에 볼 수 없다.</ul><li> <font color="red">**문제2:**</font><p>요청을 모아서 처리할 수 없다.</p><ul><li>여러 다른 시스템이 <code class="language-plaintext highlighter-rouge">playsound</code>를 마음대로 호출<li>멀티코어 하드웨어에서 실행된다면 게임 시스템들을 별도의 스레드로 나눠야한다.<li><code class="language-plaintext highlighter-rouge">playsound</code> API가 동기식이기 때문에 코드는 호출한 스레드에서 실행된다.<li><code class="language-plaintext highlighter-rouge">playsound</code>는 여러 스레드에서 동시에 실행됨<li>동기화 처리가 없으므로 문제<li>오디오용 스레드를 별도로 만들면 문제가 더 심각해짐.</ul><li> <font color="red">**문제3:**</font><p>요청이 원치 않는 스레드에서 처리된다.</p><ul><li><p>모든 문제의 원인: 오디오 엔진이 <code class="language-plaintext highlighter-rouge">playsound</code> 호출을 ‘하던 일을 멈추고 사운드 재생’이라고 해석</p><li><p><code class="language-plaintext highlighter-rouge">즉시성</code>문제</p><li>오디오 엔진이 요청을 받을 때 이를 처리하기에 항상 적당한 것은 아님<li>해결: 요청을 받는 부분과 요청을 처리하는 부분을 분리해야함.</ul></ul></div></details><h2 id="the-pattern"><strong>The pattern</strong><a href="#the-pattern"><i class="fas fa-hashtag"></i></a></h2></h2><hr /><ul><li><strong>큐</strong>: <strong>요청이나 알림</strong>을 받는 순서대로 저장.<li><strong>알림을</strong> <strong>보내는</strong> <strong>곳</strong>: 요청을 큐에 넣은 뒤 결과를 기다리지 않고 리턴.<li><p><strong>요청을</strong> <strong>처리하는</strong> <strong>곳</strong>: 큐에 들어 있는 <strong>요청을</strong> <strong>나중에</strong> <strong>처리한다</strong>.</p><li><p><strong>요청</strong>: 그곳에서 직접 처리 or 다른 여러 곳으로 보내질 수 있다.</p><li><strong>이렇게 요청을 보내는 쪽과 받는 쪽을 코드뿐만이 아니라 시간 측면에서도 디커플링한다.</strong></ul><h2 id="언제-사용할-것인가"><strong>언제 사용할 것인가?</strong><a href="#언제-사용할-것인가"><i class="fas fa-hashtag"></i></a></h2></h2><hr /><ul><li><p>메시지를 보내는 곳과 받는 곳을 분리하고 싶을 뿐이라면 옵저버 패턴이나 명령 패턴같은 걸로 덜 복잡하게 이를 처리할 수 있다.</p><li><p>메시지를 보내는 시점과 받는 시점을 분리하고 싶은 경우에 큐가 필요하다.</p><li>pushing, pulling<ul><li>일을 요청: 밀어 넣기<li>일을 받기: 가져와서 처리<li>둘 사이에 <strong>버퍼가</strong> 필요<li>큐만 제공할 수 있는 기능</ul><li>큐는 요청을 받는 쪽에 제어권을 제공한다.<ul><li>받는 쪽: 처리 지연가능, 모아서 처리 또는 버릴 수 있음.</ul><li><p>보내는쪽: 요청을 큐에 넣은 뒤, 잘 처리하기를 바라는 것밖에 없음.</p><li>보내는 쪽에서 처리 응답을 받아야 한다면 큐를 쓰는 게 적합하지 않다.</ul><h2 id="주의-사항"><strong>주의 사항</strong><a href="#주의-사항"><i class="fas fa-hashtag"></i></a></h2></h2><hr /><ul><li><p>이벤트 큐는 복잡하고 게임 구조에 전반적으로 영향을 미침.</p><li><p>잘 생각해야함.</p></ul><h3 id="중앙-이벤트-큐는-전역변수와-같다"><strong>중앙 이벤트 큐는 전역변수와 같다</strong><a href="#중앙-이벤트-큐는-전역변수와-같다"><i class="fas fa-hashtag"></i></a></h3></h3><ul><li>이벤트 큐는 모든 게임 시스템에서 서로 메시지를 주고받는 복잡한 중앙역에 많이 사용됨.<li>전역변수 == 좋지 못함<ul><li>상호 의존성이 생김.<li>관리 문제 발생</ul></ul><h3 id="월드-상태는-언제든-바뀔-수-있다"><strong>월드 상태는 언제든 바뀔 수 있다</strong><a href="#월드-상태는-언제든-바뀔-수-있다"><i class="fas fa-hashtag"></i></a></h3></h3><ul><li>다양한 월드 상태를 알아야함.<ul><li>어떤 상황에서 어떤 객체가 죽었는지 등에 관한 정보<li>바로바로 이벤트가 처리되지 않으면 정보가 사라질 수 있음.</ul><li>현재 월드 상태가 이벤트가 만들어진 당시 상태와 다를 수 있음.<ul><li>큐에 들어가는 이벤트에 데이터가 훨씬 더 많이 필요.</ul><li>동기 이벤트: 알림 받는 쪽이 바로 상황 확인 가능</ul><h3 id="피드백-루프에-빠질-수-있다"><strong>피드백 루프에 빠질 수 있다</strong><a href="#피드백-루프에-빠질-수-있다"><i class="fas fa-hashtag"></i></a></h3></h3><ul><li><p>모든 이벤트, 메시지 시스템은 순환이 생기지 않도록 주의해야함,</p><ol><li>A에게 이벤트를 보냄<li>B가 이벤트를 받아 응답으로 다른 이벤트를 보냄<li>이 이벤트가 우연하게 A에서 처리해야하는 작업이라 A가 이벤트 보냄<li>2-3 반복</ol><li>동기적이면, 스택 오버플로가 나기 때문에 순환을 금방 찾을 수 있다.<li><p>비동기적 =&gt; 콜스택이 풀려 계속 이벤트를 서로 주고 받을 수 있다.</p><ul><li>이 문제를 피하는 일반적인 규칙: <strong>이벤트를</strong> <strong>처리하는</strong> <strong>코드</strong> <strong>내에서는</strong> <strong>이벤트를</strong> <strong>보내지</strong> <strong>않는것</strong>.</ul><blockquote><p>이벤트 시스템에 간단한 디버깅용 로거를 집어넣는것도 괜찮다.</p></blockquote></ul><h2 id="예제-코드"><strong>예제 코드</strong><a href="#예제-코드"><i class="fas fa-hashtag"></i></a></h2></h2><hr /><ul><li><p>위에서 다룬 사운드 엔진의 playSound()의 문제점을 해결하려고함.</p><li><p>문제1: API가 블록된다.</p></ul><details><summary><font color="red">playsound가 바로 리턴하게, 기본 배열 사용하여 메시지 저장 =&gt; 큐가 필요 </font></summary><div><ul><li><p><code class="language-plaintext highlighter-rouge">playsound</code>가 바로 리턴하게 만들려면 사운드 출력 작업을지연 시켜야한다.</p><ul><li>나중에 사운드를 출력할 때 필요한 정보를 저장할 수있도록 간단히 구조체부터 정의해야한다.</ul><div class="language-cpp highlighter-rouge"><div class="code-header"> <span label-text="Cpp"><i class="fas fa-code small"></i></span> <button aria-label="copy" title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+</pre><td class="rouge-code"><pre><span class="k">struct</span> <span class="nc">PlayMessage</span>
+<span class="p">{</span>
+  <span class="n">SoundId</span> <span class="n">id</span><span class="p">;</span>
+  <span class="kt">int</span> <span class="n">volume</span><span class="p">;</span>
+<span class="p">};</span>
+</pre></table></code></div></div><ul><li>보류된 메시지를 저장할 수 있도록 저장 공간을만들어야한다.<ul><li>피보나치 힙, 스킵 리스트, 링크드리스트 등<li>실무에서 동일한 데이터들을 저장하는 가장 좋은 방법은 그냥 배열을 쓰는것이다.</ul></ul><li><strong>기본</strong> <strong>배열의</strong> <strong>장점</strong><ul><li>동적할당이 필요없음.<li>메모리에 추가 정보나 포인터저장하지 않아도됨.<li>메모리가 이어져있어 캐시하기 좋음.(데이터 지역성 패턴 참고)</ul><li>코드는 다음과 같다.</ul><div class="language-cpp highlighter-rouge"><div class="code-header"> <span label-text="Cpp"><i class="fas fa-code small"></i></span> <button aria-label="copy" title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+</pre><td class="rouge-code"><pre><span class="k">class</span> <span class="nc">Audio</span>
+<span class="p">{</span>
+<span class="nl">public:</span>
+  <span class="k">static</span> <span class="kt">void</span> <span class="n">init</span><span class="p">()</span>
+  <span class="p">{</span>
+    <span class="n">numPending_</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+  <span class="p">}</span>
+
+  <span class="c1">// Other stuff...</span>
+<span class="nl">private:</span>
+  <span class="k">static</span> <span class="k">const</span> <span class="kt">int</span> <span class="n">MAX_PENDING</span> <span class="o">=</span> <span class="mi">16</span><span class="p">;</span>
+
+  <span class="k">static</span> <span class="n">PlayMessage</span> <span class="n">pending_</span><span class="p">[</span><span class="n">MAX_PENDING</span><span class="p">];</span>
+  <span class="k">static</span> <span class="kt">int</span> <span class="n">numPending_</span><span class="p">;</span>
+<span class="p">};</span>
+</pre></table></code></div></div><ul><li>배열의 크기는 최악의 경우에 맞추어 조정한다.<li>메시지는 배열 제일 맨 뒤에 넣는다.</ul><div class="language-cpp highlighter-rouge"><div class="code-header"> <span label-text="Cpp"><i class="fas fa-code small"></i></span> <button aria-label="copy" title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+</pre><td class="rouge-code"><pre><span class="kt">void</span> <span class="n">Audio</span><span class="o">::</span><span class="n">playSound</span><span class="p">(</span><span class="n">SoundId</span> <span class="n">id</span><span class="p">,</span> <span class="kt">int</span> <span class="n">volume</span><span class="p">)</span>
+<span class="p">{</span>
+  <span class="n">assert</span><span class="p">(</span><span class="n">numPending_</span> <span class="o">&lt;</span> <span class="n">MAX_PENDING</span><span class="p">);</span>
+
+  <span class="n">pending_</span><span class="p">[</span><span class="n">numPending_</span><span class="p">].</span><span class="n">id</span> <span class="o">=</span> <span class="n">id</span><span class="p">;</span>
+  <span class="n">pending_</span><span class="p">[</span><span class="n">numPending_</span><span class="p">].</span><span class="n">volume</span> <span class="o">=</span> <span class="n">volume</span><span class="p">;</span>
+  <span class="n">numPending_</span><span class="o">++</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></table></code></div></div><ul><li>사운드 출력은 update 메서드에 놓는다.(업데이트 메서드 패턴)</ul><div class="language-cpp highlighter-rouge"><div class="code-header"> <span label-text="Cpp"><i class="fas fa-code small"></i></span> <button aria-label="copy" title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+</pre><td class="rouge-code"><pre><span class="k">class</span> <span class="nc">Audio</span>
+<span class="p">{</span>
+<span class="nl">public:</span>
+  <span class="k">static</span> <span class="kt">void</span> <span class="n">update</span><span class="p">()</span>
+  <span class="p">{</span>
+    <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">numPending_</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
+    <span class="p">{</span>
+      <span class="n">ResourceId</span> <span class="n">resource</span> <span class="o">=</span> <span class="n">loadSound</span><span class="p">(</span><span class="n">pending_</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">id</span><span class="p">);</span>
+      <span class="kt">int</span> <span class="n">channel</span> <span class="o">=</span> <span class="n">findOpenChannel</span><span class="p">();</span>
+      <span class="k">if</span> <span class="p">(</span><span class="n">channel</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="k">return</span><span class="p">;</span>
+      <span class="n">startSound</span><span class="p">(</span><span class="n">resource</span><span class="p">,</span> <span class="n">channel</span><span class="p">,</span> <span class="n">pending_</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">volume</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="n">numPending_</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+  <span class="p">}</span>
+
+  <span class="c1">// Other stuff...</span>
+<span class="p">};</span>
+</pre></table></code></div></div><ul><li>이제 update를 적절한 곳에서 호출하면 된다.<ul><li>메인 게임 루프 or 별도의 오디오 스레드</ul><li><p>update() 한 번 호출로 모든 사운드 요청을 다 처리할 수 있다고 가정하고 있음.</p><li><p>사운드 리소스가 로딩된 다음에 비동기적으로 요청을 처리해야한다면 이렇게 안됨.</p><li>update()에서 한 번에 하나의 요청만 처리하게 하려면 버퍼에서 요청을 하나씩 꺼낼 수 있어야함. - 큐가 필요</ul></div></details> <details><summary><font color="red">원형 버퍼</font></summary><div><ul><li>큐를 구현하는 방법중 하나.<li><p>큐 앞에서부터 순차적으로 데이터를 가져올 수 있다.</p><li>머리(head): 큐에서 요청을 읽을 위치.(가장 먼저 보류된 요청)<li>꼬리(tail): 배열에서 새로운 요청이 들어갈 자리. (마지각 요청의 다음을 가리킴, 반 열린구간)<li>playSound()는 배열 맨 뒤에 요청을 추가한다.</ul><p><img data-proofer-ignore data-src="https://gameprogrammingpatterns.com/images/event-queue-queue.png" alt="" /></p><ul><li>코드는 다음과 같다.</ul><div class="language-cpp highlighter-rouge"><div class="code-header"> <span label-text="Cpp"><i class="fas fa-code small"></i></span> <button aria-label="copy" title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+</pre><td class="rouge-code"><pre><span class="k">class</span> <span class="nc">Audio</span>
+<span class="p">{</span>
+<span class="nl">public:</span>
+  <span class="k">static</span> <span class="kt">void</span> <span class="n">init</span><span class="p">()</span>
+  <span class="p">{</span>
+    <span class="n">head_</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+    <span class="n">tail_</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+  <span class="p">}</span>
+
+  <span class="c1">// Methods...</span>
+<span class="nl">private:</span>
+  <span class="k">static</span> <span class="kt">int</span> <span class="n">head_</span><span class="p">;</span>
+  <span class="k">static</span> <span class="kt">int</span> <span class="n">tail_</span><span class="p">;</span>
+
+  <span class="c1">// Array...</span>
+<span class="p">};</span>
+</pre></table></code></div></div><ul><li>numPending* 이 tail*로 바뀌었다.</ul><div class="language-cpp highlighter-rouge"><div class="code-header"> <span label-text="Cpp"><i class="fas fa-code small"></i></span> <button aria-label="copy" title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+</pre><td class="rouge-code"><pre><span class="kt">void</span> <span class="n">Audio</span><span class="o">::</span><span class="n">playSound</span><span class="p">(</span><span class="n">SoundId</span> <span class="n">id</span><span class="p">,</span> <span class="kt">int</span> <span class="n">volume</span><span class="p">)</span>
+<span class="p">{</span>
+  <span class="n">assert</span><span class="p">(</span><span class="n">tail_</span> <span class="o">&lt;</span> <span class="n">MAX_PENDING</span><span class="p">);</span>
+
+  <span class="c1">// Add to the end of the list.</span>
+  <span class="n">pending_</span><span class="p">[</span><span class="n">tail_</span><span class="p">].</span><span class="n">id</span> <span class="o">=</span> <span class="n">id</span><span class="p">;</span>
+  <span class="n">pending_</span><span class="p">[</span><span class="n">tail_</span><span class="p">].</span><span class="n">volume</span> <span class="o">=</span> <span class="n">volume</span><span class="p">;</span>
+  <span class="n">tail_</span><span class="o">++</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></table></code></div></div><ul><li>update()는 다음과 같이 바뀌었다.</ul><div class="language-cpp highlighter-rouge"><div class="code-header"> <span label-text="Cpp"><i class="fas fa-code small"></i></span> <button aria-label="copy" title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+</pre><td class="rouge-code"><pre><span class="kt">void</span> <span class="n">Audio</span><span class="o">::</span><span class="n">update</span><span class="p">()</span>
+<span class="p">{</span>
+  <span class="c1">// If there are no pending requests, do nothing.</span>
+  <span class="k">if</span> <span class="p">(</span><span class="n">head_</span> <span class="o">==</span> <span class="n">tail_</span><span class="p">)</span> <span class="k">return</span><span class="p">;</span>
+
+  <span class="n">ResourceId</span> <span class="n">resource</span> <span class="o">=</span> <span class="n">loadSound</span><span class="p">(</span><span class="n">pending_</span><span class="p">[</span><span class="n">head_</span><span class="p">].</span><span class="n">id</span><span class="p">);</span>
+  <span class="kt">int</span> <span class="n">channel</span> <span class="o">=</span> <span class="n">findOpenChannel</span><span class="p">();</span>
+  <span class="k">if</span> <span class="p">(</span><span class="n">channel</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="k">return</span><span class="p">;</span>
+  <span class="n">startSound</span><span class="p">(</span><span class="n">resource</span><span class="p">,</span> <span class="n">channel</span><span class="p">,</span> <span class="n">pending_</span><span class="p">[</span><span class="n">head_</span><span class="p">].</span><span class="n">volume</span><span class="p">);</span>
+
+  <span class="n">head_</span><span class="o">++</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></table></code></div></div><ul><li>이제 버퍼를 원형 버퍼로 만들어보자</ul><p><img data-proofer-ignore data-src="https://gameprogrammingpatterns.com/images/event-queue-crawl.png" alt="" /></p><ul><li>머리 앞부분의 빈 공간을 사용하게끔, 꼬리를 다시 배열 앞으로 보내면 된다.</ul><p><img data-proofer-ignore data-src="https://gameprogrammingpatterns.com/images/event-queue-ring.png" alt="" /></p><ul><li>playsound에서의 구현은 다음과 같다.</ul><div class="language-cpp highlighter-rouge"><div class="code-header"> <span label-text="Cpp"><i class="fas fa-code small"></i></span> <button aria-label="copy" title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+</pre><td class="rouge-code"><pre><span class="kt">void</span> <span class="n">Audio</span><span class="o">::</span><span class="n">playSound</span><span class="p">(</span><span class="n">SoundId</span> <span class="n">id</span><span class="p">,</span> <span class="kt">int</span> <span class="n">volume</span><span class="p">)</span>
+<span class="p">{</span>
+  <span class="n">assert</span><span class="p">((</span><span class="n">tail_</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="n">MAX_PENDING</span> <span class="o">!=</span> <span class="n">head_</span><span class="p">);</span>
+
+  <span class="c1">// Add to the end of the list.</span>
+  <span class="n">pending_</span><span class="p">[</span><span class="n">tail_</span><span class="p">].</span><span class="n">id</span> <span class="o">=</span> <span class="n">id</span><span class="p">;</span>
+  <span class="n">pending_</span><span class="p">[</span><span class="n">tail_</span><span class="p">].</span><span class="n">volume</span> <span class="o">=</span> <span class="n">volume</span><span class="p">;</span>
+  <span class="n">tail_</span> <span class="o">=</span> <span class="p">(</span><span class="n">tail_</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="n">MAX_PENDING</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></table></code></div></div><ul><li>update는 다음과 같이 수정한다.</ul><div class="language-cpp highlighter-rouge"><div class="code-header"> <span label-text="Cpp"><i class="fas fa-code small"></i></span> <button aria-label="copy" title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+</pre><td class="rouge-code"><pre><span class="kt">void</span> <span class="n">Audio</span><span class="o">::</span><span class="n">update</span><span class="p">()</span>
+<span class="p">{</span>
+  <span class="c1">// If there are no pending requests, do nothing.</span>
+  <span class="k">if</span> <span class="p">(</span><span class="n">head_</span> <span class="o">==</span> <span class="n">tail_</span><span class="p">)</span> <span class="k">return</span><span class="p">;</span>
+
+  <span class="n">ResourceId</span> <span class="n">resource</span> <span class="o">=</span> <span class="n">loadSound</span><span class="p">(</span><span class="n">pending_</span><span class="p">[</span><span class="n">head_</span><span class="p">].</span><span class="n">id</span><span class="p">);</span>
+  <span class="kt">int</span> <span class="n">channel</span> <span class="o">=</span> <span class="n">findOpenChannel</span><span class="p">();</span>
+  <span class="k">if</span> <span class="p">(</span><span class="n">channel</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="k">return</span><span class="p">;</span>
+  <span class="n">startSound</span><span class="p">(</span><span class="n">resource</span><span class="p">,</span> <span class="n">channel</span><span class="p">,</span> <span class="n">pending_</span><span class="p">[</span><span class="n">head_</span><span class="p">].</span><span class="n">volume</span><span class="p">);</span>
+
+  <span class="n">head_</span> <span class="o">=</span> <span class="p">(</span><span class="n">head_</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="n">MAX_PENDING</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></table></code></div></div><ul><li>동적 할당도 필요 없고, 데이터를 옮길 필요도 없고 단순 배열만큼이나 캐시하기 좋은 큐가 완성되었다.</ul><blockquote><p>큐의 최대용량 MAX_PENDING이 신경쓰인다면, 늘어나는 배열을 사용하면 된다. 배열이 늘어날 때 데이터를 복사해야하지만, 그 외에 삽입등 작업은 평균적으로 상수시간 안에 가능하다.</p></blockquote></div></details> <details><summary><font color="red">사운드 겹치는 문제 =&gt; 요청 취합하기</font></summary><div><ul><li>첫 번째 문제는 같은 소리를 동시에 틀면 소리가 너무 커지는 현상이 일어난다는 것이다.<ul><li>대기 중인 요청을 확인하여 같은 요청은 병합하는것</ul></ul><div class="language-cpp highlighter-rouge"><div class="code-header"> <span label-text="Cpp"><i class="fas fa-code small"></i></span> <button aria-label="copy" title-succeed="Copied!"><i class="far fa-clipboard"></i></button></div><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+</pre><td class="rouge-code"><pre><span class="kt">void</span> <span class="n">Audio</span><span class="o">::</span><span class="n">playSound</span><span class="p">(</span><span class="n">SoundId</span> <span class="n">id</span><span class="p">,</span> <span class="kt">int</span> <span class="n">volume</span><span class="p">)</span>
+<span class="p">{</span>
+  <span class="c1">// Walk the pending requests.</span>
+  <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="n">head_</span><span class="p">;</span> <span class="n">i</span> <span class="o">!=</span> <span class="n">tail_</span><span class="p">;</span>
+       <span class="n">i</span> <span class="o">=</span> <span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="n">MAX_PENDING</span><span class="p">)</span>
+  <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">pending_</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">id</span> <span class="o">==</span> <span class="n">id</span><span class="p">)</span>
+    <span class="p">{</span>
+      <span class="c1">// Use the larger of the two volumes.</span>
+      <span class="n">pending_</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">volume</span> <span class="o">=</span> <span class="n">max</span><span class="p">(</span><span class="n">volume</span><span class="p">,</span> <span class="n">pending_</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">volume</span><span class="p">);</span>
+
+      <span class="c1">// Don't need to enqueue.</span>
+      <span class="k">return</span><span class="p">;</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+
+  <span class="c1">// Previous code...</span>
+<span class="p">}</span>
+</pre></table></code></div></div><ul><li><p>보류 중인 요청을 조회하여 둘 중 소리가 큰 값 하나로 합치는것.</p><li><p>배치(batch) 작업도 같은 방식이다.</p><li><p>요청을 처리할 때가 아니라 큐에 넣기 전에 일어나는 일.</p><li>호출하는 쪽의 처리 부담이 늘어난다는 단점이 생김.<ul><li>큐가 큰 경우 update()에서 요청을 취합하는게 더 나을 수 있음.<li>아니면 해시 테이블 같은 걸 사용하면 상수 시간에 중복여부 확인 가능하다.</ul><li> <font color="red">주의</font><p>: 취합 가능한 최대 동시 요청 수는 큐의 크기와 같다.</p><ul><li>요청을 너무 빨리 처리하면, 요청을 합칠 가능성이 줄어든다.<li>요청 처리가 늦어져 큐가 거의 차있으면 합칠만한 요청을 찾을 가능성이 더 높다.</ul><li>이벤트 큐 패턴은 요청자가 실제로 요청이 언제 처리되는지를 모르게 막는다.<ul><li>이벤트를 없애므로<li>큐가 이렇게 상황에 따라 다르게 반응한다면, 큐에 넣은 요청이 실제로 처리될 때까지 걸리는 시간이 동작에 영향을 미칠 수 있다.</ul></ul></div></details> <details><summary><font color="red">멀티 스레드</font></summary><div><ul><li><p>동기식으로 만든 오디오 API에서는 playsound를 호출한 스레드에서 요청도 같이 처리해야 했음.</p><li><p>멀티코어 하드웨어의 성능을 최대한 끌어내야함.</p><ul><li>분야별로 할당하는 전략을 많이 사용한다.</ul><li><p>앞에서 멀티코어를 적용하기 위한 세 가지 주요 조건을 준비했음</p><ol><li>사운드 요청 코드와 사운드 재생 코드 분리<li>양쪽 코드 사이에 마샬링(marshalling)을 제공하기 위한 큐<li>큐는 나머지 코드로 부터 캡슐화됨</ol><li><p>이제 playsound, update를 스레드 안전하게 만들기만 하면된다.</p><li><p>큐가 동시에 수정되는 것만 막으면 된다.</p><ul><li>update()에서는 조건 변수 같은 것으로 기다리게 만들면 처리할 요청이 없는 동안 CPU 낭비를 막을 수 있다.<li>playSound는 작업이 많지 않아, 블록해도 오래걸리지 않음</ul></ul><blockquote><p>서버 프로그래머들은 애플리케이션을 여러 프로세스로 나눠서 이를 보완한다. 이러면 OS에서 프로세스들을 별도 코어에서 병렬적으로 실행시켜준다.</p></blockquote><blockquote><p>게임 클라이언트는 대부분 프로세스를 하나만 사용하므로, 멀티스레딩을 적용하면 많은 도움을 얻을 수 있다.</p></blockquote></div></details><h2 id="디자인-결정"><strong>디자인 결정</strong><a href="#디자인-결정"><i class="fas fa-hashtag"></i></a></h2></h2><hr /><ul><li>간단한 것부터 만들어보는게 좋다.</ul><h3 id="큐에-무엇을-넣을것인가"><strong>큐에 무엇을 넣을것인가?</strong><a href="#큐에-무엇을-넣을것인가"><i class="fas fa-hashtag"></i></a></h3></h3><ul><li>이벤트 와 메시지</ul><h4 id="큐에-이벤트를-넣는-경우"><strong>큐에 이벤트를 넣는 경우</strong><a href="#큐에-이벤트를-넣는-경우"><i class="fas fa-hashtag"></i></a></h4></h4><ul><li>이벤트 혹은 통지(notification): 이미 발생한 사건을 표현한다.<ul><li>“몬스터가 죽었음”<li>큐에 이벤트를 넣으면, 다른 객체가 비동기 옵저버 패턴 같은 방식으로 이벤트에 대해 반응 가능</ul><li><p><strong>복수 개의 리스너를 지원해야 할 때도 많다.</strong>: 큐에는 이미 발생한 일이 들어 있기 때문, 보내는 쪽에서는 누가 그걸 받는지 신경 쓰지 않는다.</p><li><strong>큐의 범위가 더 넓은 편이다.</strong>: 이벤트 큐는 이벤트를 원하는 누구에게든지 전파하는 용도로 사용된다. 리스너가 최대한 유연할 수 있도록, 큐를 더 전역적으로 노출해야 할 수 있다.</ul><h4 id="큐에-메시지를-넣는-경우"><strong>큐에 메시지를 넣는 경우</strong><a href="#큐에-메시지를-넣는-경우"><i class="fas fa-hashtag"></i></a></h4></h4><ul><li><p>메시지 또는 요청: 나중에 실행했으면 하는 행동을 표현</p><ul><li>“사운드 틀기”<li>서비스에 비동기적으로 API를 호출하는 것과 비슷.<blockquote><p>요청은 명령 패턴에서의 명령과 같음.</p></blockquote></ul><li><p><strong>대부분</strong> <strong>리스너가</strong> <strong>하나다</strong>.</p></ul><h3 id="누가-큐를-읽는가"><strong>누가 큐를 읽는가?</strong><a href="#누가-큐를-읽는가"><i class="fas fa-hashtag"></i></a></h3></h3><ul><li>예제: 큐가 캡슐솨, Audio 클래스에서만 읽을 수 있었음.<ul><li>UI의 이벤트 시스템 같은 곳에서 원하는 대로 리스너를 등록할 수 있다.<li>싱글캐스트나 브로드캐스트 같은 용어를 사용한다.</ul></ul><h4 id="싱글캐스트-큐"><strong>싱글캐스트 큐</strong><a href="#싱글캐스트-큐"><i class="fas fa-hashtag"></i></a></h4></h4><ul><li><p>큐가 어떤 클래스의 API 일부일 때 적합.</p><ul><li>호출하는 쪽에서는 playSound 메서드만 보일 뿐.</ul><li><strong>큐는 밖에서는 보이지 않는 내부 구현이 된다.</strong>: 보내는 쪽에서는 메시지를 보냈다는 것만 안다.<li><strong>큐가 더 캡슐화되어 있다.</strong>: 캡슐화 되어 있을수록 좋다.<li><strong>리스너 간에 경쟁을 고민하지 않아도 된다.</strong>: 리스너가 여러 개라면 모든 리스너에 이벤트를 보낼지, 하나의 리스너에 이벤트를 하나씩 나눠줄지(작업큐) 정해야한다.<ul><li>리스너들은 중복 작업을 하거나 서로 간섭함 =&gt; 리스너가 하나면 복잡성이 사라짐</ul></ul><h4 id="브로드캐스트-큐"><strong>브로드캐스트 큐</strong><a href="#브로드캐스트-큐"><i class="fas fa-hashtag"></i></a></h4></h4><ul><li><p>대부분의 ‘이벤트’ 시스템</p><ul><li>리스너가 10개일 경우 이벤트가 하나 들어왔을 때 10개의 리스너 모두가 그 이벤트를 볼 수 있다.</ul><li><p><strong>이벤트가 무시될 수 있다.</strong>: 리스너가 하나도 없다면, 이벤트는 그대로 벌진다.</p><li><p><strong>이벤트 필터링이 필요</strong>: 이벤트 개수 x 리스너 개수만큼 이벤트 핸들러가 자주 호출된다.</p><li><p>이벤트 핸들러 호출 횟수를 최소화 =&gt; 리스너가 받고 싶은 이벤트 집합을 조절할 수 있게</p></ul><h4 id="작업-큐"><strong>작업 큐</strong><a href="#작업-큐"><i class="fas fa-hashtag"></i></a></h4></h4><ul><li>작업 큐에도 리스너가 여러 개 있다.<ul><li>큐에 들어 있는 데이터가 리스너 중 <strong>한곳</strong>에만 간다.<li>스레드 여러 개가 동시에 실행 중인 스레드 풀에 작업을 나눠줘야 할 때 일반적으로 사용하는 패턴이다.</ul><li><strong>작업을 분배해야 한다.</strong>: 큐에 들어 있는 데이터가 하나의 리스너에만 가기 때문에 큐는 어느 리스너에 보내면 좋을지 알아야 한다.<ul><li>라운드 로빈이나 좀 더 복잡한 우선순위 시스템을 적용해도 된다.</ul></ul><h3 id="누가-큐에-값을-넣는가"><strong>누가 큐에 값을 넣는가?</strong><a href="#누가-큐에-값을-넣는가"><i class="fas fa-hashtag"></i></a></h3></h3><ul><li>이벤트 큐 패턴: 일대일, 일대다, 다대일, 다대다 등 모든 읽기/쓰기 조합으로 사용할 수 있다.</ul><h4 id="넣는-측이-하나"><strong>넣는 측이 하나</strong><a href="#넣는-측이-하나"><i class="fas fa-hashtag"></i></a></h4></h4><ul><li><p>동기형 옵저버 패턴에 가까운 형태.</p><ul><li>특정 객체에서만 이벤트 만들기 가능, 나머지는 받을 수만 있음.</ul><li><strong>어디에서 이벤트가 오는지 암시적으로 안다</strong><li><strong>리스너가 여러 개</strong></ul><h4 id="넣는-측이-여러개"><strong>넣는 측이 여러개</strong><a href="#넣는-측이-여러개"><i class="fas fa-hashtag"></i></a></h4></h4><ul><li>위의 오디오 엔진이 이런 예<li><p>public 함수로 어디에서나 큐에 요청 가능, 전역 or 중앙 이벤트 버스도 이와 같이 작동</p><li><strong>이벤트 순환을 주의해야 함.</strong><ul><li>이벤트 처리 도중에 큐를 넣으면 피드백 루프 문제 발생 가능</ul><li><strong>이벤트를 보낸 객체에 대한 레퍼런스를 이벤트에 추가해야 할 필요가 있을 수 있다.</strong><ul><li>리스너에서 보낸 쪽의 정보가 필요하다면, 정보를 같이 넣어줘야함,</ul></ul><h3 id="큐에-들어간-객체의-생명주기는-어떻게-관리할-것인가"><strong>큐에 들어간 객체의 생명주기는 어떻게 관리할 것인가?</strong><a href="#큐에-들어간-객체의-생명주기는-어떻게-관리할-것인가"><i class="fas fa-hashtag"></i></a></h3></h3><ul><li>동기형일 경우, 보내는 쪽은 기다려야함.<ul><li>메시지 == 스택에 들어가는 지역 변수이기만 해도 충분.<li>큐에다 메시지를 추가하는 함수 호출이 끝난 후에도 메시지 객체가 유지되어야함.<li>GC지원 언어의 경우 큐에 들어 있는 데이터는 필요한 만큼 메모리에 유지됨.</ul></ul><h4 id="소유권-전달"><strong>소유권 전달</strong><a href="#소유권-전달"><i class="fas fa-hashtag"></i></a></h4></h4><ul><li>받는 쪽에서 소유권을 가져가고 메시지 해제도 해야함.<ul><li><code class="language-plaintext highlighter-rouge">unique_ptr&lt;T&gt;</code></ul></ul><h4 id="소유권을-공유"><strong>소유권을 공유</strong><a href="#소유권을-공유"><i class="fas fa-hashtag"></i></a></h4></h4><ul><li>메시지를 참조하는 곳이 어디 하나라도 있다면 계속 메모리에 남아 있음.<li>참조하지 않으면 알아서 해제<ul><li><code class="language-plaintext highlighter-rouge">shared_ptr&lt;T&gt;</code></ul></ul><h4 id="큐가-소유권을-가진다"><strong>큐가 소유권을 가진다</strong><a href="#큐가-소유권을-가진다"><i class="fas fa-hashtag"></i></a></h4></h4><ul><li>메시지 큐가 생명을 관리 - 큐에서 새로운 메시지를 하나 달라고 요청 - 큐는 미리 할당해놓은 메시지의 레퍼런스를 반환하고 보내는 쪽에서는 여기에 값을 채움. - 처리가 끝나면, 받는 쪽에서 이 메시지 참조<blockquote><p>오브젝트 풀이 큐의 보조 기억장치가 되는것.</p></blockquote></ul><h2 id="관련-자료"><strong>관련 자료</strong><a href="#관련-자료"><i class="fas fa-hashtag"></i></a></h2></h2><hr /><ul><li>이벤트 큐 == 옵저버 패턴의 비동기형<li>여러 이름으로 불림.<ul><li>이벤트 큐 == 애플리케이션 내부<li>메시지 큐 == 여러 애플리케이션 끼리 통신<li>발행자/구독자(publish/subcribe, pubsub): 대규모 분산처리 시스템</ul><li>GOF의 상태 패턴과 유사한 FSM에서는 입력값을 stream으로 받음.<ul><li>FSM 입력에 비동기적으로 응답하게 하고 싶다면 입력에 큐를 넣어야함.<li>서로 통신을 주고받는 여러 상태 기계가 있고, 각자 입력을 보류하기 위해 소형 큐(mailbox)를 사용한다면, 계산 액터 모델(actor model)을 만든것과 같다.</ul><li>GO에서는 이벤트 큐나 메시지 큐로 사용하는 <code class="language-plaintext highlighter-rouge">channel</code>이라는 자료형을 언어 차원에서 지원한다.</ul><h2 id="출처"><strong>출처</strong><a href="#출처"><i class="fas fa-hashtag"></i></a></h2></h2><hr /><p><a href="https://gameprogrammingpatterns.com/event-queue.html">event-queue</a></p></div><div class="post-tail-wrapper text-muted"><div class="post-meta mb-3"> <i class="far fa-folder-open fa-fw mr-1"></i> <a href='/categories/pattern/'>pattern</a></div><div class="post-tail-bottom d-flex justify-content-between align-items-center mt-3 pt-5 pb-2"><div class="license-wrapper"> This post is licensed under <a href="https://creativecommons.org/licenses/by/4.0/"> CC BY 4.0 </a> by the author.</div><div class="share-wrapper"> <span class="share-label text-muted mr-1">Share</span> <span class="share-icons"> <a href="https://twitter.com/intent/tweet?text=[게임 프로그래밍 패턴] Decoupling Patterns: Event Queue - RohRoh&url=https://nor-s.github.io/posts/2022/02/26/19/16/pattern15/" data-toggle="tooltip" data-placement="top" title="Twitter" target="_blank" rel="noopener" aria-label="Twitter"> <i class="fa-fw fab fa-twitter"></i> </a> <a href="https://www.facebook.com/sharer/sharer.php?title=[게임 프로그래밍 패턴] Decoupling Patterns: Event Queue - RohRoh&u=https://nor-s.github.io/posts/2022/02/26/19/16/pattern15/" data-toggle="tooltip" data-placement="top" title="Facebook" target="_blank" rel="noopener" aria-label="Facebook"> <i class="fa-fw fab fa-facebook-square"></i> </a> <a href="https://telegram.me/share?text=[게임 프로그래밍 패턴] Decoupling Patterns: Event Queue - RohRoh&url=https://nor-s.github.io/posts/2022/02/26/19/16/pattern15/" data-toggle="tooltip" data-placement="top" title="Telegram" target="_blank" rel="noopener" aria-label="Telegram"> <i class="fa-fw fab fa-telegram"></i> </a> <i id="copy-link" class="fa-fw fas fa-link small" data-toggle="tooltip" data-placement="top" title="Copy link" title-succeed="Link copied successfully!"> </i> </span></div></div></div></div></div><div id="panel-wrapper" class="col-xl-3 pl-2 text-muted topbar-down"><div class="access"><div id="access-lastmod" class="post"><div class="panel-heading">Recent Update</div><ul class="post-content pl-0 pb-1 ml-1 mt-2"><li><a href="/posts/2022/03/24/03/46/skeleton1/">[opengl] OGLDEV: Skeleton Animation In OpenGL using Assimp 1</a><li><a href="/posts/2022/03/23/21/58/unreal-animation/">[UE4] 애니메이션 시작하기</a><li><a href="/posts/2022/03/22/04/45/bellman-ford/">[그래프] 벨만-포드 최단 경로 알고리즘</a><li><a href="/posts/2022/03/18/08/26/opengl22/">[learn-opengl] Advanced OpenGL: Framebuffers</a><li><a href="/posts/2022/03/18/09/28/opengl23/">[learn-opengl] Advanced OpenGL: Cubemaps</a></ul></div><div id="access-tags"><div class="panel-heading">Tags</div><div class="d-flex flex-wrap mt-3 mb-1 mr-3"> <a class="post-tag" href="/tags/opengl/">opengl</a> <a class="post-tag" href="/tags/ps/">ps</a> <a class="post-tag" href="/tags/unreal4/">unreal4</a> <a class="post-tag" href="/tags/regex/">regex</a> <a class="post-tag" href="/tags/vscode/">vscode</a> <a class="post-tag" href="/tags/algorithm/">algorithm</a> <a class="post-tag" href="/tags/box2d/">box2d</a> <a class="post-tag" href="/tags/csapp/">csapp</a> <a class="post-tag" href="/tags/note/">note</a> <a class="post-tag" href="/tags/shader/">shader</a></div></div></div><script src="https://cdn.jsdelivr.net/gh/afeld/bootstrap-toc@1.0.1/dist/bootstrap-toc.min.js"></script><div id="toc-wrapper" class="pl-0 pr-4 mb-5"><div class="panel-heading pl-3 pt-2 mb-2">Contents</div><nav id="toc" data-toggle="toc"></nav></div></div></div><div class="row"><div class="col-12 col-lg-11 col-xl-8"><div id="tail-wrapper" class="pl-1 pr-1 pl-sm-2 pr-sm-2 pl-md-4 pr-md-4"><div id="related-posts" class="mt-5 mb-2 mb-sm-4"><h3 class="pt-2 mt-1 mb-4 ml-1" data-toc-skip>Further Reading</h3><div class="card-deck mb-4"><div class="card"> <a href="/posts/2022/02/19/22/59/pattern1/"><div class="card-body"> <em class="timeago small" date="2022-02-19 22:59:30 +0900" >Feb 19</em><h3 class="pt-0 mt-1 mb-3" data-toc-skip>[게임 프로그래밍 패턴] Introduction</h3><div class="text-muted small"><p> 아키텍처, 성능 및 게임 sw 아키텍처 코드를 구성하는것이 중요. 저자에게 좋은 디자인이란, 변경한 부분을 더해도, 프로그램 전체가 그를 예상하고 작성된 것처럼 만들어진 것 아키텍처는 변화하고, 누군가는 코드베이스를 수정해야한다. 좋은 디자인은 변경사항을 쉽게 수용한다. 변경 코드...</p></div></div></a></div><div class="card"> <a href="/posts/2022/02/20/02/01/pattern2/"><div class="card-body"> <em class="timeago small" date="2022-02-20 02:01:21 +0900" >Feb 20</em><h3 class="pt-0 mt-1 mb-3" data-toc-skip>[게임 프로그래밍 패턴] Design Patterns Revisited: Command</h3><div class="text-muted small"><p> Design Patterns Revisited Gang of Four 가 문서화한 몇가지 원본 패턴들을 설명한다. Singleton과 같은 패턴들은 과도하게 사용됨 Command와 같은 패턴은 과소평과됨. Command 올바른 곳에 사용하면 엉성한코드가 깔끔해짐. GOF에서는 아래와 같이 난해하게 설명한다. ...</p></div></div></a></div><div class="card"> <a href="/posts/2022/02/20/07/56/pattern3/"><div class="card-body"> <em class="timeago small" date="2022-02-20 07:56:31 +0900" >Feb 20</em><h3 class="pt-0 mt-1 mb-3" data-toc-skip>[게임 프로그래밍 패턴] Design Patterns Revisited: Flyweight</h3><div class="text-muted small"><p> Flyweight Forest for the Trees 실시간 게임에서 거대한 삼림 지대를 구현하는것은 어렵다. 수천 개의 폴리곤을 포함하는 상세한 지오메트리를 가진 수천개의 나무. 해당 숲을 설명하기에 충분한 메모리가 있더라도, 렌더링할 때 데이터가 버스를 통해 cpu에서 gpu로 이동해야한다. 각 ...</p></div></div></a></div></div></div><div class="post-navigation d-flex justify-content-between"> <a href="/posts/2022/02/26/03/19/pattern14/" class="btn btn-outline-primary" prompt="Older"><p>[게임 프로그래밍 패턴] Decoupling Patterns: Component</p></a> <a href="/posts/2022/02/27/02/07/pattern16/" class="btn btn-outline-primary" prompt="Newer"><p>[게임 프로그래밍 패턴] Decoupling Patterns: Service Locator</p></a></div></div></div></div><footer class="d-flex w-100 justify-content-center"><div class="d-flex justify-content-between align-items-center text-muted"><div class="footer-left"><p class="mb-0"> © 2022 <a href="https://github.com/Nor-s">roh</a>. <span data-toggle="tooltip" data-placement="top" title="Except where otherwise noted, the blog posts on this site are licensed under the Creative Commons Attribution 4.0 International (CC BY 4.0) License by the author.">Some rights reserved.</span></p></div><div class="footer-right"><p class="mb-0"> Powered by <a href="https://jekyllrb.com" target="_blank" rel="noopener">Jekyll</a> with <a href="https://github.com/cotes2020/jekyll-theme-chirpy" target="_blank" rel="noopener">Chirpy</a> theme.</p></div></div></footer></div><div id="search-result-wrapper" class="d-flex justify-content-center unloaded"><div class="col-12 col-sm-11 post-content"><div id="search-hints"><div id="access-tags"><div class="panel-heading">Tags</div><div class="d-flex flex-wrap mt-3 mb-1 mr-3"> <a class="post-tag" href="/tags/opengl/">opengl</a> <a class="post-tag" href="/tags/ps/">ps</a> <a class="post-tag" href="/tags/unreal4/">unreal4</a> <a class="post-tag" href="/tags/regex/">regex</a> <a class="post-tag" href="/tags/vscode/">vscode</a> <a class="post-tag" href="/tags/algorithm/">algorithm</a> <a class="post-tag" href="/tags/box2d/">box2d</a> <a class="post-tag" href="/tags/csapp/">csapp</a> <a class="post-tag" href="/tags/note/">note</a> <a class="post-tag" href="/tags/shader/">shader</a></div></div></div><div id="search-results" class="d-flex flex-wrap justify-content-center text-muted mt-3"></div></div></div></div><div id="mask"></div><a id="back-to-top" href="#" aria-label="back-to-top" class="btn btn-lg btn-box-shadow" role="button"> <i class="fas fa-angle-up"></i> </a> <script src="https://cdn.jsdelivr.net/npm/simple-jekyll-search@1.10.0/dest/simple-jekyll-search.min.js"></script> <script> SimpleJekyllSearch({ searchInput: document.getElementById('search-input'), resultsContainer: document.getElementById('search-results'), json: '/assets/js/data/search.json', searchResultTemplate: '<div class="pl-1 pr-1 pl-sm-2 pr-sm-2 pl-lg-4 pr-lg-4 pl-xl-0 pr-xl-0"> <a href="{url}">{title}</a><div class="post-meta d-flex flex-column flex-sm-row text-muted mt-1 mb-1"> {categories} {tags}</div><p>{snippet}</p></div>', noResultsText: '<p class="mt-5">Oops! No result founds.</p>', templateMiddleware: function(prop, value, template) { if (prop === 'categories') { if (value === '') { return `${value}`; } else { return `<div class="mr-sm-4"><i class="far fa-folder fa-fw"></i>${value}</div>`; } } if (prop === 'tags') { if (value === '') { return `${value}`; } else { return `<div><i class="fa fa-tag fa-fw"></i>${value}</div>`; } } } }); </script> <script src="https://cdn.jsdelivr.net/combine/npm/lozad/dist/lozad.min.js,npm/magnific-popup@1/dist/jquery.magnific-popup.min.js,npm/clipboard@2/dist/clipboard.min.js"></script> <script defer src="/assets/js/dist/post.min.js"></script> <script src="https://cdn.jsdelivr.net/combine/npm/popper.js@1.16.1,npm/bootstrap@4/dist/js/bootstrap.min.js"></script> <script defer src="/app.js"></script> <script defer src="https://www.googletagmanager.com/gtag/js?id="></script> <script> document.addEventListener("DOMContentLoaded", function(event) { window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);} gtag('js', new Date()); gtag('config', ''); }); </script>
